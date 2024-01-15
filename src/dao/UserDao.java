@@ -24,7 +24,8 @@ public class UserDao {
 		String sql = "SELECT *\r\n" + 
 				"FROM MEMBER\r\n" + 
 				"WHERE MEM_ID = ?\r\n" + 
-				"AND MEM_PASS = ?";
+				"AND MEM_PASS = ?\r\n" +
+				"AND DELYN ='N'";
 		return jdbc.selectOne(sql,param,UserVo.class);
 	}
 	

@@ -33,9 +33,13 @@ public enum View {
 	BOARD_SELLER,			// 판매자 프로필 보기
 	
 	BOARD_SELLER_ITEM,		// 판매자 프로필 에서 판매자 판매목록 보기
+	BOARD_RESULT,			// 검색/정렬 후
 	
 	CHAT_LIST,				// 채팅방 목록
 	
+	MY_SELL,				// 내 판매 목록
+	MY_BUY,					// 내 구매 목록
+	MY_PROFILE_UPDATE		// 내 프로필 변경
 	
 	
 	

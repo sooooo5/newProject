@@ -103,7 +103,7 @@ public class BoardDao {
 				"    MEM_TEM,\r\n" + 
 				"    AREA_NO\r\n" + 
 				"    FROM MEMBER\r\n" + 
-				"    WHERE MEM_ID = "+seller;
+				"    WHERE MEM_ID = '"+seller+"'";
 		return jdbc.selectList(sql, UserVo.class);
 	}
 	
@@ -117,7 +117,7 @@ public class BoardDao {
 				"    BOARD_STAT\r\n" + 
 				"FROM BOARD\r\n" + 
 				"WHERE DELYN = 'N'\r\n"+
-				"AND MEM_SELLER ="+seller;
+				"AND MEM_SELLER ='"+seller+"'";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
 	
@@ -132,5 +132,165 @@ public class BoardDao {
 		String sql = "INSERT INTO BOARD\r\n" + 
 				"VALUES(BOARD_NO_SEQ.NEXTVAL, ?, ?, ?, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '"+id+"', '"+id+"', ?)";
 		jdbc.update(sql, param);
+	}
+	
+	public List<BoardVo> boardSearch(int cate) {
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"AND CATE_ID = "+cate;
+		return jdbc.selectList(sql, BoardVo.class);
+	}
+	public List<BoardVo> boardSearch(String title) {
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"AND BOARD_TITLE LIKE '%"+title+"%'";
+		return jdbc.selectList(sql, BoardVo.class);
+	}
+	public List<BoardVo> boardSearch2(String content) {
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"AND BOARD_CONTENT LIKE '%"+content+"%'";
+		return jdbc.selectList(sql, BoardVo.class);
+	}
+	
+	public List<BoardVo> boardPrice(){
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"ORDER BY BOARD_PRICE DESC";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	public List<BoardVo> boardTem(){
+		String sql = "SELECT \r\n" + 
+				"    B.BOARD_NO, \r\n" + 
+				"    B.BOARD_TITLE, \r\n" + 
+				"    SUBSTR(B.BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    B.BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(B.BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    B.BOARD_STAT\r\n" + 
+				"FROM BOARD B, MEMBER M\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND B.MEM_BUYER =M.MEM_ID\r\n" + 
+				"ORDER BY M.MEM_TEM DESC";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	public List<BoardVo> boardLike(){
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"ORDER BY BOARD_LIKE DESC";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	public List<BoardVo> boardNew(){
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE DELYN = 'N'\r\n" + 
+				"ORDER BY BOARD_NO DESC";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	
+	public List<BoardVo> mySell(String id) {
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE MEM_SELLER = '"+id+"'";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	public List<BoardVo> myBuy(String id) {
+		String sql = "SELECT \r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD\r\n" + 
+				"WHERE MEM_BUYER = '"+id+"'";
+		return jdbc.selectList(sql,BoardVo.class);
+	}
+	
+	public List<UserVo> printMyProfile(String id) {
+		String sql = "SELECT\r\n" + 
+				"    MEM_NICK,\r\n" + 
+				"    MEM_TEM,\r\n" + 
+				"    AREA_NO\r\n" + 
+				"    FROM MEMBER\r\n" + 
+				"    WHERE MEM_ID = '"+id+"'";
+		return jdbc.selectList(sql,UserVo.class);
+	}
+	
+	public void myProfileUpdate(List<Object> list,int sel) {
+		String sql_front = "UPDATE MEMBER\r\n" + 
+				" SET ";
+		String format ="%s =?";
+		String sql = sql_front;
+			if(sel == 1) {
+				sql+=String.format(format, "MEM_PASS");
+				}
+			if(sel == 2) {
+				sql+=String.format(format, "MEM_NICK");
+				}
+			if(sel == 3) {
+				sql+=String.format(format, "AREA_NO");
+			}
+			if(sel == 4) {
+				sql+=String.format(format, "MEM_ADDRESS");
+			}
+			if(sel == 5) {
+				sql+=String.format(format, "TEL");
+			}
+			sql +="WHERE MEM_ID = ?";
+			jdbc.update(sql, list);
+	}
+	
+	public void memDel(String id) {
+			String sql = "UPDATE MEMBER\r\n" + 
+					"SET DELYN = 'Y'\r\n" + 
+					"WHERE MEM_ID = '"+id+"'";
+			jdbc.update(sql);
 	}
 }

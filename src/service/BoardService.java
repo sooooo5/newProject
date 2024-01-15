@@ -62,4 +62,47 @@ public class BoardService {
 	public void boardWrite(List<Object>param,String id) {
 		dao.boardWrite(param, id);
 	}
+	
+	public List<BoardVo> boardSearch(int cate){
+		return dao.boardSearch(cate);
+	}
+	public List<BoardVo> boardSearch(String title){
+		return dao.boardSearch(title);
+	}
+	public List<BoardVo> boardSearch2(String content){
+		return dao.boardSearch2(content);
+	}
+	
+	public List<BoardVo> boardPrice(){
+		return dao.boardPrice();
+	}
+	
+	public List<BoardVo> boardTem(){
+		return dao.boardTem();
+	}
+	public List<BoardVo> boardLike(){
+		return dao.boardLike();
+	}
+	public List<BoardVo> boardNew(){
+		return dao.boardNew();
+	}
+	
+	public List<BoardVo> mySell(String id){
+		return dao.mySell(id);
+	}
+	public List<BoardVo> myBuy(String id){
+		return dao.mySell(id);
+	}
+	
+	public List<UserVo> printMyProfile(String id){
+		return dao.printMyProfile(id);
+	}
+	
+	public void myProfileUpdate(List<Object> list,int sel) {
+		dao.myProfileUpdate(list, sel);
+	}
+	
+	public void memDel(String id) {
+		dao.memDel(id);
+	}
 }
