@@ -27,6 +27,13 @@ public enum View {
 	BOARD_SORT,				// 게시글 정렬
 	BOARD_MY_PROFILE,		// 내 프로필 보기
 	
+	BOARD_UPDATE,			// 게시글 수정
+	BOARD_DEL,				// 게시글 삭제
+	BOARD_LIKE,				// 게시글 좋아요
+	BOARD_SELLER,			// 판매자 프로필 보기
+	
+	BOARD_SELLER_ITEM,		// 판매자 프로필 에서 판매자 판매목록 보기
+	
 	CHAT_LIST,				// 채팅방 목록
 	
 	
