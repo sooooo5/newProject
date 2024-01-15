@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import dao.BoardDao;
+import vo.BoardVo;
 
 public class BoardService {
 	private static BoardService instance = null;
@@ -19,8 +20,11 @@ public class BoardService {
 	}
 	BoardDao dao = BoardDao.getInstance();
 	
-	public List<Map<String, Object>> printBoard(){
+	public List<BoardVo> printBoard(){
 		return dao.printBoard();
 	}
 	
+	public BoardVo boardDetail(int sel) {
+		return dao.boardDetail(sel);
+	}
 }

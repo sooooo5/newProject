@@ -21,6 +21,13 @@ public enum View {
 	
 	
 	BOARD_LIST,				// 게시판 리스트
+	BOARD_DETAIL,			// 게시글 상세보기
+	BOARD_WRITE,			// 게시글 작성
+	BOARD_SEARCH,			// 게시글 검색
+	BOARD_SORT,				// 게시글 정렬
+	BOARD_MY_PROFILE,		// 내 프로필 보기
+	
+	CHAT_LIST,				// 채팅방 목록
 	
 	
 	

@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import util.Print;
 import util.ScanUtil;
 import util.View;
 import vo.AdminVo;
+import vo.BoardVo;
 import vo.UserVo;
 
 public class MainController extends Print {
@@ -46,16 +48,77 @@ public class MainController extends Print {
 			case BOARD_LIST:
 				view = boardList();
 				break;
+			case BOARD_DETAIL:
+				view = boardDtail();
+				break;
+			case BOARD_WRITE:
+				view = boardWrite();
+				break;
+			case BOARD_SEARCH:
+				view = boardSearch();
+				break;
+			case BOARD_SORT:
+				view = boardSort();
+				break;
+			case CHAT_LIST:
+				view = chatList();
+				break;
+			case BOARD_MY_PROFILE:
+				view = boardMyProfile();
+				break;
 			default:
 				break;
 			}
 		}
 	}
+	private View boardMyProfile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private View chatList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private View boardSort() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private View boardSearch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private View boardWrite() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private View boardDtail() {
+		int sel = ScanUtil.nextInt("게시글 선택>>");
+		boardService.boardDetail(sel);
+		BoardVo list = boardService.boardDetail(sel);
+		int board_no = list.getBoard_no();
+		String board_title = list.getBoard_title();
+		String board_content = list.getBoard_content();
+		int board_price = list.getBoard_price();
+		String board_date = list.getBoard_date();
+		String board_stat = list.getBoard_stat();
+		int board_like = list.getBoard_like();
+		String mem_seller = list.getMem_seller();
+		int cate_id = list.getCate_id();
+		
+		
+		return null;
+	}
+
 	private View boardList() {
 		System.out.println("전체 게시판 출력");
-		List<Map<String, Object>> list =  boardService.printBoard();
-		for (Map<String, Object> map : list) {
-			System.out.println(map);
+		List<BoardVo> list =  boardService.printBoard();
+		for (BoardVo boardVo : list) {
+			System.out.println(boardVo);
 		}
 		System.out.println("1. 거래글 상세보기");
 		System.out.println("2. 거래글 작성");
@@ -66,17 +129,17 @@ public class MainController extends Print {
 		int sel = ScanUtil.nextInt("메뉴 선택 : ");
 		switch (sel) {
 		case 1: 
-			return View.MAIN;
+			return View.BOARD_DETAIL;
 		case 2:
-			return View.ADMIN;
+			return View.BOARD_WRITE;
 		case 3:
-			return View.ADMIN;
+			return View.BOARD_SEARCH;
 		case 4:
-			return View.ADMIN;
+			return View.BOARD_SORT;
 		case 5:
-			return View.ADMIN;
+			return View.CHAT_LIST;
 		case 6:
-			return View.ADMIN;
+			return View.BOARD_MY_PROFILE;
 		default:
 			return View.MAIN;
 		}

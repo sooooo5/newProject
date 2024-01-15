@@ -1,7 +1,5 @@
-/controller/
-/dao/
-/noti/
-/service/
-/util/
-/view/
 /vo/
+/dao/
+/service/
+/controller/
+/util/
