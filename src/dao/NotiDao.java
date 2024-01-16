@@ -3,7 +3,7 @@ package dao;
 import java.util.List;
 
 import util.JDBCUtil;
-import vo.Fboard;
+import vo.MessageVo;
 
 public class NotiDao {
 	private static NotiDao singleTon = null;
@@ -21,18 +21,20 @@ public class NotiDao {
 
 	
 	JDBCUtil jdbc = JDBCUtil.getInstance();
-	public List<Fboard> getNoti() {
-		String sql = " select * from free_board where noti ='y'"; 
-		return jdbc.selectList(sql, Fboard.class);
-	}
 	
-	public List<Fboard> getList() {
-		String sql = " select * from free_board"; 
-		return jdbc.selectList(sql, Fboard.class);
-	}
 	
-	public void setNoti(int no) {
-		String sql = " update free_board set noti ='y' where board_no="+no; 
-		jdbc.update(sql);
+	
+	public List<MessageVo> getNoti(int no) {
+		String sql = "SELECT *\r\n" + 
+				"FROM (SELECT ROWNUM RN, A.* FROM\r\n" + 
+				"        (SELECT\r\n" + 
+				"    MESSAGE_ID,\r\n" + 
+				"    MESSAGE_CONTENT,\r\n" + 
+				"    TO_CHAR(MESSAGE_DATE, 'MM/DD') MESSAGE_DATE,\r\n" + 
+				"    MEM_ID,\r\n" + 
+				"    MEM_ID2\r\n" + 
+				"FROM MESSAGE\r\n" + 
+				"WHERE CHAT_NO = "+no+") A)"; 
+		return jdbc.selectList(sql, MessageVo.class);
 	}
 }

@@ -3,7 +3,7 @@ package service;
 import java.util.List;
 
 import dao.NotiDao;
-import vo.Fboard;
+import vo.MessageVo;
 
 public class NotiService {
 	private static NotiService singleTon = null;
@@ -19,15 +19,7 @@ public class NotiService {
 	}
 	NotiDao ndao = NotiDao.getInstance();
 	
-	public List<Fboard> getNoti() {
-		return ndao.getNoti();
-	}
-	
-	public List<Fboard> getList() {
-		return ndao.getList();
-	}
-	
-	public void setNoti(int no) {
-		ndao.setNoti(no);
+	public List<MessageVo> getNoti(int no) {
+		return ndao.getNoti(no);
 	}
 }

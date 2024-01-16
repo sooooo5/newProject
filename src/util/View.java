@@ -10,14 +10,14 @@ public enum View {
 	ADMIN_LOGIN,			// 관리자 로그인 로직
 	
 	ADMIN_BOARD_LIST,		// 관리자 거래글 리스트
-	ADMIN_DEL,				// 거래글 삭제
-	ADMIN_MEM_LIST,			// 회원목록 조회
-	NOTICE,					// 공지사항 리스트
+	ADMIN_DEL,				// 관리자 거래글 삭제
+	ADMIN_MEM_LIST,			// 관리자 회원목록 조회
 	
-	NOTICE_DETAIL,			// 공지사항 상세보기
-	NOTICE_ADD,				// 공지사항 등록
-	NOTICE_UPDATE,			// 공지사항 수정
-	NOTICE_DEL,				// 공지사항 삭제
+	ADMIN_NOTICE,			// 관리자 공지사항 리스트
+	ADMIN_NOTICE_DETAIL,	// 관리자 공지사항 상세보기
+	NOTICE_ADD,				// 관리자 공지사항 등록
+	NOTICE_UPDATE,			// 관리자 공지사항 수정
+	NOTICE_DEL,				// 관리자 공지사항 삭제
 	
 	
 	BOARD_LIST,				// 게시판 리스트
@@ -36,17 +36,13 @@ public enum View {
 	BOARD_RESULT,			// 검색/정렬 후
 	
 	CHAT_LIST,				// 채팅방 목록
+	CHAT_MESSAGE,			// 채팅창
+	CHAT_LOG,				// 채팅진행창
 	
 	MY_SELL,				// 내 판매 목록
 	MY_BUY,					// 내 구매 목록
-	MY_PROFILE_UPDATE		// 내 프로필 변경
+	MY_PROFILE_UPDATE,		// 내 프로필 변경
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	NOTICE,					// 공지사항 리스트
+	NOTICE_DETAIL			// 공지사항 상세보기
 }

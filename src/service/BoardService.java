@@ -7,6 +7,7 @@ import controller.MainController;
 import dao.BoardDao;
 import util.View;
 import vo.BoardVo;
+import vo.MessageVo;
 import vo.UserVo;
 
 public class BoardService {
@@ -104,5 +105,65 @@ public class BoardService {
 	
 	public void memDel(String id) {
 		dao.memDel(id);
+			}
+	public List<Map<String, Object>> noticeList() {
+		List<Map<String, Object>> list = dao.noticeList();
+		
+		for (Map<String, Object> map : list) {
+			String title   = (String) map.get("NOTICE_TITLE");
+			String content = (String) map.get("NOTICE_MES");
+			if(title.length() > 5) {
+				title = title.substring(0, 5)+"...";
+			}
+			if(content.length() > 10) {
+				content = content.substring(0, 10)+"...";
+			}
+			content = content.replace("\n", "");
+			content = content.replace("\r", "");
+			content = content.replace("\r\n", "");
+			
+			map.put("NOTICE_TITLE", title);
+			map.put("NOTICE_MES", content);
+		}
+		return list;
+	}
+
+	public Map<String, Object> noticeDetail(int no) {
+		return dao.noticeDetail(no);
+	}
+	
+	public void makeChatRoom(List<Object>param, int sel) {
+		dao.makeChatRoom(param,sel);
+	}
+	
+	public void sendMessage(List<Object>param,int no) {
+		dao.sendMessage(param, no);
+	}
+	
+	public Map<String, Object> maxChatRoomNum(){
+		return dao.maxChatRoomNum();
+	}
+	public List<Map<String, Object>> chatList(List<Object>param){
+		return dao.chatList(param);
+	}
+	public void delChatRoom(int no) {
+		dao.delChatRoom(no);
+	}
+	
+	public Map<String, Object> loadBno(int con){
+		return dao.loadBno(con);
+	}
+	
+	public void finishSell(int bno) {
+		dao.finishSell(bno);
+	}
+	public List<MessageVo> pastMessage(int no){
+		return dao.pastMessage(no);
+	}
+	public Map<String, Object> readBno(int con){
+		return dao.readBno(con);
+	}
+	public Map<String, Object> readSeller(int con) {
+		return dao.readSeller(con);
 	}
 }

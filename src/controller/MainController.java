@@ -1,19 +1,22 @@
 package controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import noti.ThreadNoti;
 import service.AdminService;
 import service.BoardService;
+import service.NotiService;
 import service.UserService;
 import util.Print;
 import util.ScanUtil;
 import util.View;
 import vo.AdminVo;
 import vo.BoardVo;
+import vo.MessageVo;
 import vo.UserVo;
 
 public class MainController extends Print {
@@ -21,8 +24,11 @@ public class MainController extends Print {
 	UserService userService = UserService.getInstance();
 	AdminService adminService = AdminService.getInstance();
 	BoardService boardService = BoardService.getInstance();
-	
+	NotiService nService = NotiService.getInstance();
 	public static void main(String[] args) {
+		ThreadNoti tn = new ThreadNoti();
+		tn.start();
+		sessionStorage.put("noti", tn);
 		new MainController().start();
 	}
 	
@@ -39,11 +45,17 @@ public class MainController extends Print {
 			case ADMIN_LOGIN:
 				view = adminLogin();
 				break;
-			case NOTICE:
-				view = notice();
+			case ADMIN_BOARD_LIST:
+				view = adminBoardList();
 				break;
-			case NOTICE_DETAIL:
-				view = noticeDetail();
+			case ADMIN_DEL:
+				view = adminBoardDelete();
+				break;
+			case ADMIN_NOTICE:
+				view = adminNotice();
+				break;
+			case ADMIN_NOTICE_DETAIL:
+				view = adminNoticeDetail();
 				break;
 			case NOTICE_ADD:
 				view = noticeInsert();
@@ -111,12 +123,84 @@ public class MainController extends Print {
 			case MY_BUY:
 				view = myBuy();
 				break;
+			case NOTICE:
+				view = notice();
+				break;
+			case NOTICE_DETAIL:
+				view = noticeDetail();
+				break;
+			case CHAT_MESSAGE:
+				view = chatMessage();
+				break;
+			case CHAT_LOG:
+				view = chatLog();
+				break;
 			default:
 				break;
 			}
 		}
 	}
 	
+	private View chatLog() {
+		UserVo user = (UserVo) MainController.sessionStorage.get("user");
+		String id = user.getMem_id();
+		String seller = (String) sessionStorage.get("seller");
+		int no = (int) sessionStorage.get("chatno");
+		int bno = (int) sessionStorage.get("bno");
+		boolean flag =true;
+		
+		while(flag) {
+			String message = ScanUtil.nextLine("메세지입력>>  (exit 입력시 종료)");
+			if(message.equals("exit")) {
+				flag = false;
+				return View.CHAT_MESSAGE;
+			}
+			List<Object> param = new ArrayList();
+			param.add(message);
+			param.add(id);
+			param.add(seller);
+			boardService.sendMessage(param, no);
+		}
+		return View.CHAT_LOG;
+	}
+
+	private View chatMessage() {
+		UserVo user = (UserVo) MainController.sessionStorage.get("user");
+		String id = user.getMem_id();
+		String seller = (String) sessionStorage.get("seller");
+		int no = (int) sessionStorage.get("chatno");
+		int bno = (int) sessionStorage.get("bno");
+		boolean flag =true;
+		
+		ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
+		tn.setStop(true);
+		
+		System.out.println("1.채팅방 목록");
+		System.out.println("2.거래 확정");   //채팅방도 사라진다.
+		System.out.println("3.전체 게시판");
+		System.out.println("4.채팅방 삭제");
+		
+		int sel = ScanUtil.nextInt(" ");
+		if(sel == 1) {
+			return View.CHAT_LIST;
+		}
+		if(sel == 2) {
+			boardService.delChatRoom(no);
+			boardService.finishSell(bno);
+			System.out.println("거래 완료!");
+			return View.CHAT_LIST;
+		}
+		if(sel == 3) {
+			return View.BOARD_LIST;
+		}
+		if(sel == 4) {
+			System.out.println("채팅방 삭제");
+			boardService.delChatRoom(no);
+			return View.CHAT_LIST;
+		}
+		return View.CHAT_LIST;
+	}
+
 	private View myBuy() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
@@ -273,7 +357,7 @@ public class MainController extends Print {
 		}
 		return View.BOARD_RESULT;
 	}
-
+	
 	private View boardSellerItem() {
 		String seller = (String) sessionStorage.get("seller");
 		List<BoardVo> sellerI = boardService.boardSellerItem(seller);
@@ -376,6 +460,55 @@ public class MainController extends Print {
 		
 		return View.BOARD_DETAIL;
 	}
+	
+	
+	// 관리자 - 거래글 리스트 
+	private View adminBoardList() {
+		List<BoardVo> list =  adminService.adminBoardList();
+		printAdminBoardList(list);
+		printAdminBoardListMenu();	//메뉴 출력
+		
+		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		switch (sel) {
+		case 1:
+			int boardNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+			sessionStorage.put("boardNo", boardNo);
+			return View.ADMIN_DEL;		// 거래글 삭제
+		case 2:
+			return View.ADMIN;			// 관리자 홈
+		default:
+			return View.ADMIN;			// 예외 : 관리자 홈
+		}
+	}
+	
+	
+	// 관리자 - 거래글 삭제
+	private View adminBoardDelete() {
+		int boardNo = (int) sessionStorage.get("boardNo");
+
+	    String confirmDelete = null;
+	    while (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
+	        // 게시글 삭제 확인
+	        confirmDelete = ScanUtil.nextLine("게시글을 삭제하시겠습니까? (Y/N) : ");
+	        if (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
+	            System.out.println("Y 또는 N을 입력해주세요.");
+	        }
+	    }
+
+	    if (confirmDelete.equalsIgnoreCase("N")) {
+	        System.out.println("삭제가 취소되었습니다.");
+	        return View.ADMIN_BOARD_LIST;
+	    } else if (confirmDelete.equalsIgnoreCase("Y")) {
+	        // 게시글 삭제 서비스 호출
+	        boardService.boardDel(boardNo);
+	        System.out.println("성공적으로 삭제되었습니다.");
+	        return View.ADMIN_BOARD_LIST;
+	    } else {
+	        System.out.println("잘못된 입력입니다. 삭제를 취소합니다.");
+	        return View.ADMIN_BOARD_LIST;
+	    }
+	}
+	
 
 	// 관리자 - 회원목록 조회
 	private View memberList() {
@@ -389,10 +522,11 @@ public class MainController extends Print {
 			case 1:
 				return View.ADMIN;			// 관리자 홈
 			default:
-				return View.ADMIN;			// 예외 : 공지사항 리스트
+				return View.ADMIN;			// 예외 : 관리자 홈
 		}
 	}
 
+	
 	// 관리자 - 공지사항 등록
 	private View noticeInsert() {
 	    printNoticeInsert();
@@ -434,7 +568,7 @@ public class MainController extends Print {
 	        adminService.noticeInsert(param);
 
 	        System.out.println("공지사항이 성공적으로 등록되었습니다.");
-	        return View.NOTICE;
+	        return View.ADMIN_NOTICE;
 	    } catch (IllegalArgumentException e) {
 	        // 예외 처리: 길이 초과 등의 문제 발생 시
 	        System.out.println("오류 발생: " + e.getMessage());
@@ -449,102 +583,202 @@ public class MainController extends Print {
 	    printNoticeUpdate();
 
 	    int sel = ScanUtil.nextInt("수정할 항목 : ");
-	    if (sel == 4) return View.NOTICE_DETAIL;
+	    if (sel == 4) return View.ADMIN_NOTICE_DETAIL;
 
 	    // 수정할 내용을 담을 리스트
 	    List<Object> param = new ArrayList<>();
+	    String name = null;
+	    String content = null;
+
 	    if (sel == 1 || sel == 3) {
-	        String name = ScanUtil.nextLine("제목 >> ");
+	        while (name == null || name.isEmpty()) {
+	            name = ScanUtil.nextLine("제목 >> ");
+	            if (name.isEmpty()) {
+	                System.out.println("제목을 입력해주세요.");
+	            } else if (name.getBytes().length > 40) {
+	                System.out.println("입력된 제목의 길이: " + name.getBytes().length);
+	                System.out.println("제목은 40byte 이하로 입력해주세요.");
+	                name = null; // 제목 길이가 초과된 경우 다시 입력 받기
+	            }
+	        }
 	        param.add(name);
 	    }
+
 	    if (sel == 2 || sel == 3) {
-	        String content = ScanUtil.nextLine("내용 >> ");
+	        while (content == null || content.isEmpty()) {
+	            content = ScanUtil.nextLine("내용 >> ");
+	            if (content.isEmpty()) {
+	                System.out.println("내용을 입력해주세요.");
+	            }
+	        }
 	        param.add(content);
 	    }
+
 	    int noticeNo = (int) sessionStorage.get("noticeNo");
 	    param.add(noticeNo);
 
 	    // 수정 내용 반영 전에 사용자에게 확인
-	    String confirmUpdate = ScanUtil.nextLine("게시글을 수정하시겠습니까?(Y/N) : ");
+	    String confirmUpdate = null;
+
+	    while (confirmUpdate == null || !confirmUpdate.equalsIgnoreCase("Y") && !confirmUpdate.equalsIgnoreCase("N")) {
+	        confirmUpdate = ScanUtil.nextLine("게시글을 수정하시겠습니까?(Y/N) : ");
+
+	        if (confirmUpdate == null || !confirmUpdate.equalsIgnoreCase("Y") && !confirmUpdate.equalsIgnoreCase("N")) {
+	            System.out.println("Y 또는 N을 입력해주세요.");
+	        }
+	    }
+
 	    if (!confirmUpdate.equalsIgnoreCase("Y")) {
 	        System.out.println("수정이 취소되었습니다.");
-	        return View.NOTICE_DETAIL;
+	        return View.ADMIN_NOTICE_DETAIL;
 	    }
 
 	    // 게시글 수정 서비스 호출
 	    adminService.noticeUpdate(param, sel);
 	    System.out.println("성공적으로 수정되었습니다.");
 
-	    return View.NOTICE_DETAIL;
+	    return View.ADMIN_NOTICE_DETAIL;
 	}
 
 	
 	// 관리자 - 공지사항 삭제
 	private View noticeDelete() {
-		String confirmDelete = ScanUtil.nextLine("게시글을 삭제하시겠습니까?(Y/N) : ");
-		
-		if(confirmDelete.equalsIgnoreCase("N")) {
-			System.out.println("삭제가 취소되었습니다.");
-			return View.NOTICE_DETAIL;
-		}
-		if(confirmDelete.equalsIgnoreCase("Y")) {
-			int noticeNo = (int) sessionStorage.get("noticeNo");
-			List<Object> param = new ArrayList();
-			param.add(noticeNo);
-			
-			// 게시글 삭제 서비스 호출
-			adminService.noticeUpdate(param, 0);
-			System.out.println("성공적으로 삭제되었습니다.");
-		}
-		return View.NOTICE;
+	    String confirmDelete = null;
+	    while (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
+	        // 게시글 삭제 확인
+	        confirmDelete = ScanUtil.nextLine("게시글을 삭제하시겠습니까? (Y/N) : ");
+
+	        if (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
+	            System.out.println("Y 또는 N을 입력해주세요.");
+	        }
+	    }
+
+	    if (confirmDelete.equalsIgnoreCase("N")) {
+	        System.out.println("삭제가 취소되었습니다.");
+	        return View.ADMIN_NOTICE_DETAIL;
+	    } else if (confirmDelete.equalsIgnoreCase("Y")) {
+	        int noticeNo = (int) sessionStorage.get("noticeNo");
+	        List<Object> param = new ArrayList<>();
+	        param.add(noticeNo);
+	        // 게시글 삭제 서비스 호출
+	        adminService.noticeUpdate(param, 0);
+	        System.out.println("성공적으로 삭제되었습니다.");
+	        return View.ADMIN_NOTICE;
+	    } else {
+	        System.out.println("잘못된 입력입니다. 삭제를 취소합니다.");
+	        return View.ADMIN_NOTICE_DETAIL;
+	    }
 	}
 
 	
 	// 관리자 - 공지사항 상세보기
-	private View noticeDetail() {
+	private View adminNoticeDetail() {
 		int noticeNo = (int) sessionStorage.get("noticeNo");
 		// 공지사항 상세보기 출력
 		Map<String, Object> detail = adminService.noticeDetail(noticeNo);
+		printNoticeDetail(detail);
+		printAdminNoticeDetailMenu(); 	//메뉴 출력
+		
+		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		switch (sel) {
+		case 1:
+			return View.NOTICE_UPDATE;			// 공지사항 수정
+		case 2:
+			return View.NOTICE_DEL;				// 공지사항 삭제
+		case 3:
+			return View.ADMIN_NOTICE;			// 공지사항 리스트
+		case 4:
+			return View.ADMIN;					// 관리자 홈
+		default:
+			return View.ADMIN_NOTICE_DETAIL;	// 예외 : 공지사항 상세보기
+		}
+	}
+
+	
+	// 관리자 - 공지사항
+	private View adminNotice() {
+		// 공지사항 목록 출력
+		List<Map<String, Object>> list = adminService.noticeList();
+		printNoticeList(list);
+		printAdminNoticeListMenu(); 	//메뉴 출력
+		
+		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		switch (sel) {
+			case 1:
+				int noticeNo;
+			 	Map<String, Object> detail;
+				do {
+				    noticeNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+				    detail = adminService.noticeDetail(noticeNo);
+				    if (detail == null) {
+				        System.out.println("잘못된 게시글 번호입니다. 다시 입력해주세요.");
+				    }
+				} while (detail == null);
+				
+				sessionStorage.put("noticeNo", noticeNo);
+				return View.ADMIN_NOTICE_DETAIL; 	 // 공지사항 상세보기
+			case 2:
+				return View.NOTICE_ADD;				// 공지사항 등록
+			case 3:
+				return View.ADMIN;					// 관리자 홈
+			default:
+				return View.NOTICE;					// 예외 : 공지사항 리스트
+		}
+	}
+	
+	
+	// 회원 - 공지사항 상세보기
+	private View noticeDetail() {
+		int noticeNo = (int) sessionStorage.get("noticeNo");
+		// 공지사항 상세보기 출력
+		Map<String, Object> detail = boardService.noticeDetail(noticeNo);
 		printNoticeDetail(detail);
 		printNoticeDetailMenu(); 	//메뉴 출력
 		
 		int sel = ScanUtil.nextInt("메뉴 선택 : ");
 		switch (sel) {
 		case 1:
-			return View.NOTICE_UPDATE;		// 공지사항 수정
-		case 2:
-			return View.NOTICE_DEL;			// 공지사항 삭제
-		case 3:
 			return View.NOTICE;				// 공지사항 리스트
-		case 4:
-			return View.ADMIN;				// 관리자 홈
+		case 2:
+			return View.BOARD_LIST;			// 게시물 리스트
 		default:
 			return View.NOTICE_DETAIL;		// 예외 : 공지사항 상세보기
 		}
 	}
-
-	// 관리자 - 공지사항
+	
+	
+	// 회원 - 공지사항
 	private View notice() {
 		// 공지사항 목록 출력
-		List<Map<String, Object>> list = adminService.noticeList();
+		List<Map<String, Object>> list = boardService.noticeList();
 		printNoticeList(list);
 		printNoticeListMenu(); 	//메뉴 출력
 		
 		int sel = ScanUtil.nextInt("메뉴 선택 : ");
 		switch (sel) {
 			case 1:
-				int noticeNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+				int noticeNo;
+			 	Map<String, Object> detail;
+				do {
+				    noticeNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+				    detail = adminService.noticeDetail(noticeNo);
+				    if (detail == null) {
+				        System.out.println("잘못된 게시글 번호입니다. 다시 입력해주세요.");
+				    }
+				} while (detail == null);
+				
 				sessionStorage.put("noticeNo", noticeNo);
-				return View.NOTICE_DETAIL;	// 공지사항 상세보기
+				return View.NOTICE_DETAIL;  // 공지사항 상세보기
 			case 2:
-				return View.NOTICE_ADD;		// 공지사항 등록
-			case 3:
-				return View.ADMIN;			// 관리자 홈
+				return View.BOARD_LIST;		// 게시물 리스트
 			default:
 				return View.NOTICE;			// 예외 : 공지사항 리스트
 		}
 	}
 	
+	
+	
+
 	private View boardMyProfile() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
@@ -577,8 +811,39 @@ public class MainController extends Print {
 	}
 
 	private View chatList() {
-		// TODO Auto-generated method stub
-		return null;
+		UserVo user = (UserVo) MainController.sessionStorage.get("user");
+		String id = user.getMem_id();
+		List<Object>param = new ArrayList();
+		param.add(id);
+		param.add(id);
+		
+		List<Map<String, Object>> list = boardService.chatList(param);
+		for (Map<String, Object> map : list) {
+			BigDecimal cno =(BigDecimal) map.get("CHAT_NO");
+			BigDecimal bno =(BigDecimal) map.get("BOARD_NO");
+			String bt =(String) map.get("BOARD_TITLE");
+			System.out.println("채팅방 번호: "+cno+"게시물 번호: "+bno+"게시물 제목: "+bt);
+		}
+		
+		System.out.println("1.채팅방 선택");
+		System.out.println("2.나가기");
+		int sel = ScanUtil.menu();
+		if(sel == 1) {
+			int con = ScanUtil.nextInt("채팅방 번호 입력>> ");
+			sessionStorage.put("chatno", con);
+			ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
+			Map<String, Object> number = boardService.readBno(con);
+			int bno = Integer.valueOf(String.valueOf(number.get("BOARD_NO")));
+			Map<String, Object> number2 = boardService.readSeller(con);
+			String seller = (String) number2.get("MEM_ID2");
+			sessionStorage.put("bno", bno);
+			sessionStorage.put("seller", seller);
+			tn.setStop(false);
+			return View.CHAT_LOG;
+		}if(sel == 2) {
+			return View.BOARD_LIST;
+		}
+		return View.BOARD_LIST;
 	}
 
 	private View boardSort() {
@@ -684,7 +949,7 @@ public class MainController extends Print {
 		boardService.boardWrite(param, id);
 		return View.BOARD_LIST;
 	}
-
+	
 	private View boardDtail() {
 		int sel = (int) sessionStorage.get("bno");
 		boardService.boardDetail(sel);
@@ -727,9 +992,26 @@ public class MainController extends Print {
 				return View.BOARD_DETAIL;
 			}
 		}
+		UserVo user = (UserVo) MainController.sessionStorage.get("user");
+		String id = user.getMem_id();
+		String seller = (String) sessionStorage.get("seller");
+		List<Object>param = new ArrayList();
+		param.add(id);
+		param.add(seller);
+		
 		switch (con) {
 		case 1: 
-			return View.BOARD_DETAIL;
+			boardService.makeChatRoom(param,sel);
+			Map<String, Object> number = boardService.maxChatRoomNum();
+			int no = Integer.valueOf(String.valueOf(number.get("COUNT(*)")));
+			sessionStorage.put("chatno", no);
+			Map<String, Object> oBno = boardService.loadBno(con);
+			int bno = Integer.valueOf(String.valueOf(oBno.get("BOARD_NO")));
+			sessionStorage.put("bno", bno);
+			
+			ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
+			tn.setStop(false);
+			return View.CHAT_LOG;
 		case 2:
 			return View.BOARD_UPDATE;
 		case 3:
@@ -774,6 +1056,7 @@ public class MainController extends Print {
 		System.out.println("4. 거래글 정렬");
 		System.out.println("5. 채팅방 보기");
 		System.out.println("6. 내 프로필 보기");
+		System.out.println("7. 공지사항");
 		System.out.println("이전페이지 = <, 다음페이지= >");
 		String sel = ScanUtil.nextLine("메뉴 선택 : ");
 		if(sel.equals("1")) {
@@ -805,6 +1088,8 @@ public class MainController extends Print {
 			return View.CHAT_LIST;
 		case "6":
 			return View.BOARD_MY_PROFILE;
+		case "7":
+			return View.NOTICE;
 		default:
 			return View.BOARD_LIST;
 		}
@@ -885,10 +1170,8 @@ public class MainController extends Print {
 		case 2:
 			return View.ADMIN_MEM_LIST;		// 회원목록 조회
 		case 3:
-			return View.NOTICE;				// 공지사항
+			return View.ADMIN_NOTICE;		// 공지사항
 		case 4:
-			return View.ADMIN;				// 관리자 홈
-		case 5:
 			adminLogout();
 			return View.MAIN;				// 로그아웃 후 메인으로 이동
 		default:
@@ -932,10 +1215,10 @@ public class MainController extends Print {
 	    sessionStorage.remove("admin");
 
 	    System.out.println("로그아웃되었습니다.");
-	    return View.MAIN;  // 로그아웃 후 이동할 화면을 지정하세요.
+	    return View.MAIN;
 	}
+					
 	
-
 	private View home() {
 		printHome();
 		

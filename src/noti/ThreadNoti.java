@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import controller.MainController;
 import service.NotiService;
-import vo.Fboard;
+import vo.MessageVo;
 
 public class ThreadNoti extends Thread {
 
@@ -29,16 +30,17 @@ public class ThreadNoti extends Thread {
 	}
 	
 	public void printMessege() {
-		List<Fboard> l = ns.getNoti();
+		int no = (int) MainController.sessionStorage.get("chatno");
+		List<MessageVo> l = ns.getNoti(no);
 		
 		
-		for (Fboard f : l) {
-			int no = f.getBoard_no();
-			if (messge.containsKey(no)) {
+		for (MessageVo f : l) {
+			int cno = f.getMessage_id();
+			if (messge.containsKey(cno)) {
 				continue;
 			}
 			System.out.println(f);
-			messge.put(no, "");
+			messge.put(cno, "");
 		}
 	}
 	

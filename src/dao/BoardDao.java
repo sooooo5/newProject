@@ -5,6 +5,7 @@ import java.util.Map;
 
 import util.JDBCUtil;
 import vo.BoardVo;
+import vo.MessageVo;
 import vo.UserVo;
 
 public class BoardDao {
@@ -26,7 +27,7 @@ public class BoardDao {
 				"FROM (SELECT ROWNUM RN, A.* FROM\r\n" + 
 				"        (SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
+				"    RPAD(BOARD_TITLE,40,' ') BOARD_TITLE, \r\n" + 
 				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
@@ -292,5 +293,99 @@ public class BoardDao {
 					"SET DELYN = 'Y'\r\n" + 
 					"WHERE MEM_ID = '"+id+"'";
 			jdbc.update(sql);
+	}
+	
+	public List<Map<String, Object>> noticeList() {
+	    String sql = " SELECT NOTICE_NO, SUBSTR(NOTICE_TITLE,0,10) NOTICE_TITLE, SUBSTR(NOTICE_MES,0,20) NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\n" + 
+	                 " FROM NOTICE\n" + 
+	                 " WHERE DELYN = 'N'";
+	    return jdbc.selectList(sql);
+	}
+	
+	public Map<String, Object> noticeDetail(int no) {
+		String sql = " SELECT NOTICE_NO, NOTICE_TITLE, NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\r\n" + 
+					" FROM NOTICE\r\n" + 
+					" WHERE DELYN = 'N'\r\n" + 
+					" AND NOTICE_NO = " +no;
+		return jdbc.selectOne(sql);
+	}
+	
+	public void makeChatRoom(List<Object>param, int sel) {
+		String sql = "INSERT INTO CHATROOM\r\n" + 
+				"VALUES(CHAT_NO_SEQ.NEXTVAL,"+sel+",?,?,DEFAULT)";
+		jdbc.update(sql,param);
+	}
+	
+	public void sendMessage(List<Object>param,int no) {
+		String sql = "INSERT INTO MESSAGE\r\n" + 
+				"VALUES(MES_NO_SEQ.NEXTVAL,?,DEFAULT,"+no+",?,?)";
+		jdbc.update(sql,param);
+	}
+	
+	public Map<String, Object> maxChatRoomNum() {
+		String sql = "SELECT COUNT(*)\r\n" + 
+				"FROM CHATROOM";
+		return jdbc.selectOne(sql);
+	}
+	
+	public List<Map<String, Object>> chatList(List<Object>param) {
+		String sql = "SELECT \r\n" + 
+				"    CHAT_NO,\r\n" + 
+				"    BOARD_NO,\r\n" + 
+				"    MEM_ID,\r\n" + 
+				"    MEM_ID2\r\n" + 
+				"FROM CHATROOM\r\n" + 
+				"WHERE MEM_ID = ?\r\n" + 
+				"OR MEM_ID2 = ?";
+		return jdbc.selectList(sql, param);
+	}
+	
+	public void delChatRoom(int no) {
+		String sql = "UPDATE CHATROOM\r\n" + 
+				"SET DELYN = 'Y'\r\n" + 
+				"WHERE CHAT_NO = "+no;
+		jdbc.update(sql);
+	}
+	
+	public Map<String, Object> loadBno(int con) {
+		String sql = "SELECT\r\n" + 
+				"    BOARD_NO\r\n" + 
+				"FROM CHATROOM\r\n" + 
+				"WHERE CHAT_NO = "+con;
+		return jdbc.selectOne(sql);
+	}
+	public void finishSell(int bno) {
+		String sql ="UPDATE BOARD\r\n" + 
+				"SET BOARD_STAT = 'Y'\r\n" + 
+				"WHERE BOARD_NO = "+bno;
+		jdbc.update(sql);
+	}
+	public List<MessageVo> pastMessage(int no) {
+		String sql = "SELECT\r\n" + 
+				"    MESSAGE_ID,\r\n" + 
+				"    MESSAGE_CONTENT,\r\n" + 
+				"    TO_CHAR(MESSAGE_DATE, 'MM/DD') MESSAGE_DATE,\r\n" + 
+				"    MEM_ID,\r\n" + 
+				"    MEM_ID2\r\n" + 
+				"FROM MESSAGE\r\n" +
+				"WHERE CHAT_NO ="+no; 
+		return jdbc.selectList(sql, MessageVo.class);
+	}
+	
+	public Map<String, Object> readBno(int con) {
+		String sql = "SELECT\r\n" + 
+				"    BOARD_NO\r\n"+ 
+				"FROM CHATROOM\r\n" + 
+				"WHERE CHAT_NO ="+con;
+		
+		return jdbc.selectOne(sql);
+	}
+	public Map<String, Object> readSeller(int con) {
+		String sql = "SELECT\r\n" + 
+				"    MEM_ID2\r\n"+ 
+				"FROM CHATROOM\r\n" + 
+				"WHERE CHAT_NO ="+con;
+		
+		return jdbc.selectOne(sql);
 	}
 }

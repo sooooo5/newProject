@@ -5,6 +5,7 @@ import java.util.Map;
 
 import util.JDBCUtil;
 import vo.AdminVo;
+import vo.BoardVo;
 import vo.UserVo;
 
 public class AdminDao {
@@ -84,6 +85,14 @@ public class AdminDao {
 	                 " FROM MEMBER\n" + 
 	                 " WHERE DELYN = 'N'";
 	    return jdbc.selectList(sql);
+	}
+	
+	// 관리자 - 거래글 리스트
+	public List<BoardVo> adminBoardList() {
+		String sql =" SELECT BOARD_NO, BOARD_TITLE, BOARD_PRICE, TO_CHAR(BOARD_DATE, 'YYYY/MM/DD') BOARD_DATE, BOARD_STAT, MEM_SELLER\n" + 
+					" FROM BOARD\n" + 
+					" WHERE DELYN = 'N'";
+		return jdbc.selectList(sql,BoardVo.class);
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import controller.MainController;
 import dao.AdminDao;
 import vo.AdminVo;
+import vo.BoardVo;
 import vo.UserVo;
 
 public class AdminService {
@@ -77,6 +78,11 @@ public class AdminService {
 	public List<Map<String, Object>> memberList() {
 		List<Map<String, Object>> list = dao.memberList();
 		return list;
+	}
+	
+	// 관리자 - 거래글 리스트
+	public List<BoardVo> adminBoardList(){
+		return dao.adminBoardList();
 	}
 
 	
