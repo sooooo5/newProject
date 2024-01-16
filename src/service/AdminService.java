@@ -42,11 +42,11 @@ public class AdminService {
 			String title   = (String) map.get("NOTICE_TITLE");
 			String content = (String) map.get("NOTICE_MES");
 			// 글 출력 길이 제한
-			if(title.length() > 5) {
-				title = title.substring(0, 5)+"...";
+			if(title.length() > 8) {
+				title = title.substring(0, 8)+"...";
 			}
-			if(content.length() > 10) {
-				content = content.substring(0, 10)+"...";
+			if(content.length() > 15) {
+				content = content.substring(0, 15)+"...";
 			}
 			// 개행문자 제거
 			content = content.replace("\n", "");

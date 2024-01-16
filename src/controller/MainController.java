@@ -152,6 +152,8 @@ public class MainController extends Print {
 		while(flag) {
 			String message = ScanUtil.nextLine("메세지입력>>  (exit 입력시 종료)");
 			if(message.equals("exit")) {
+				ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
+				tn.setStop(true);
 				flag = false;
 				return View.CHAT_MESSAGE;
 			}
@@ -172,9 +174,7 @@ public class MainController extends Print {
 		int bno = (int) sessionStorage.get("bno");
 		boolean flag =true;
 		
-		ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
-		tn.setStop(true);
-		
+				
 		System.out.println("1.채팅방 목록");
 		System.out.println("2.거래 확정");   //채팅방도 사라진다.
 		System.out.println("3.전체 게시판");
@@ -366,7 +366,7 @@ public class MainController extends Print {
 		}
 		System.out.println("1. 판매글 상세보기");
 		System.out.println("2. 돌아가기");
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		if(sel == 1) {
 			int con = ScanUtil.nextInt("게시글 번호 입력>>");
 			sessionStorage.put("bno", con);
@@ -468,7 +468,7 @@ public class MainController extends Print {
 		printAdminBoardList(list);
 		printAdminBoardListMenu();	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
 			int boardNo = ScanUtil.nextInt("게시글 번호 입력 : ");
@@ -494,7 +494,7 @@ public class MainController extends Print {
 	            System.out.println("Y 또는 N을 입력해주세요.");
 	        }
 	    }
-
+	    printLn(1);
 	    if (confirmDelete.equalsIgnoreCase("N")) {
 	        System.out.println("삭제가 취소되었습니다.");
 	        return View.ADMIN_BOARD_LIST;
@@ -517,7 +517,7 @@ public class MainController extends Print {
 		printMemberList(list);
 		printMemberListMenu(); 	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 			case 1:
 				return View.ADMIN;			// 관리자 홈
@@ -566,7 +566,7 @@ public class MainController extends Print {
 	    try {
 	        // 서비스로 전달하기 전에 길이 체크 및 예외 발생
 	        adminService.noticeInsert(param);
-
+	        printLn(1);
 	        System.out.println("공지사항이 성공적으로 등록되었습니다.");
 	        return View.ADMIN_NOTICE;
 	    } catch (IllegalArgumentException e) {
@@ -583,7 +583,11 @@ public class MainController extends Print {
 	    printNoticeUpdate();
 
 	    int sel = ScanUtil.nextInt("수정할 항목 : ");
-	    if (sel == 4) return View.ADMIN_NOTICE_DETAIL;
+	    if (sel == 4) {
+	    	printLn(1);
+	    	System.out.println("수정이 취소되었습니다.");
+	    	return View.ADMIN_NOTICE_DETAIL;
+	    }
 
 	    // 수정할 내용을 담을 리스트
 	    List<Object> param = new ArrayList<>();
@@ -627,7 +631,7 @@ public class MainController extends Print {
 	            System.out.println("Y 또는 N을 입력해주세요.");
 	        }
 	    }
-
+	    printLn(1);
 	    if (!confirmUpdate.equalsIgnoreCase("Y")) {
 	        System.out.println("수정이 취소되었습니다.");
 	        return View.ADMIN_NOTICE_DETAIL;
@@ -653,6 +657,7 @@ public class MainController extends Print {
 	        }
 	    }
 
+	    printLn(1);
 	    if (confirmDelete.equalsIgnoreCase("N")) {
 	        System.out.println("삭제가 취소되었습니다.");
 	        return View.ADMIN_NOTICE_DETAIL;
@@ -679,7 +684,7 @@ public class MainController extends Print {
 		printNoticeDetail(detail);
 		printAdminNoticeDetailMenu(); 	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
 			return View.NOTICE_UPDATE;			// 공지사항 수정
@@ -702,7 +707,7 @@ public class MainController extends Print {
 		printNoticeList(list);
 		printAdminNoticeListMenu(); 	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 			case 1:
 				int noticeNo;
@@ -735,7 +740,7 @@ public class MainController extends Print {
 		printNoticeDetail(detail);
 		printNoticeDetailMenu(); 	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
 			return View.NOTICE;				// 공지사항 리스트
@@ -754,7 +759,7 @@ public class MainController extends Print {
 		printNoticeList(list);
 		printNoticeListMenu(); 	//메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 			case 1:
 				int noticeNo;
@@ -950,6 +955,7 @@ public class MainController extends Print {
 		return View.BOARD_LIST;
 	}
 	
+	
 	private View boardDtail() {
 		int sel = (int) sessionStorage.get("bno");
 		boardService.boardDetail(sel);
@@ -973,7 +979,7 @@ public class MainController extends Print {
 		System.out.println("4. 좋아요 누르기");
 		System.out.println("5. 판매자 프로필 보기");
 		System.out.println("6. 게시글 리스트");
-		int con = ScanUtil.nextInt("메뉴 선택 : ");
+		int con = ScanUtil.menu();
 		if(con == 4) {
 			boardService.boardLike(sel);
 			System.out.println("좋아요!");
@@ -1060,7 +1066,7 @@ public class MainController extends Print {
 		System.out.println("이전페이지 = <, 다음페이지= >");
 		String sel = ScanUtil.nextLine("메뉴 선택 : ");
 		if(sel.equals("1")) {
-			int con = ScanUtil.nextInt("게시글 번호 입력>>");
+			int con = ScanUtil.nextInt("게시글 번호 입력>> ");
 			sessionStorage.put("bno", con);
 			boardService.boardViews(con);
 		}
@@ -1163,7 +1169,7 @@ public class MainController extends Print {
 	private View admin() {
 		printAdminHome();	// 메뉴 출력
 		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1: 
 			return View.ADMIN_BOARD_LIST;	// 거래글 리스트
@@ -1183,10 +1189,10 @@ public class MainController extends Print {
 	// 관리자 - 로그인
 	private View adminLogin() {
 		printadminLogin();
-		
-		String id = ScanUtil.nextLine("ID>>");
-		String pass = ScanUtil.nextLine("PASS>>");
-		
+		printLn(1);
+		String id = ScanUtil.nextLine("ID >> ");
+		String pass = ScanUtil.nextLine("PASS >> ");
+		printLn(1);
 		List<Object> param = new ArrayList();
 		param.add(id);
 		param.add(pass);
@@ -1213,16 +1219,16 @@ public class MainController extends Print {
 	private View adminLogout() {
 	    // 현재 세션에서 로그인 정보 삭제
 	    sessionStorage.remove("admin");
-
+	    printLn(1);
 	    System.out.println("로그아웃되었습니다.");
+	    printLn(2);
 	    return View.MAIN;
 	}
-					
 	
+
 	private View home() {
 		printHome();
-		
-		int sel = ScanUtil.nextInt("메뉴 선택 : ");
+		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1: 
 			return View.MEMBER;

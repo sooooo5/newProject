@@ -81,7 +81,7 @@ public class AdminDao {
 	
 	// 관리자 - 회원목록 조회
 	public List<Map<String, Object>> memberList() {
-	    String sql = " SELECT MEM_ID, MEM_NAME, MEM_NICK, MEM_ADDRESS, MEM_TEL, MEM_TEM, AREA_NO\n" + 
+	    String sql = " SELECT RPAD(MEM_ID,10,' ') MEM_ID, MEM_NAME, MEM_NICK, MEM_ADDRESS, MEM_TEL, MEM_TEM, AREA_NO\n" + 
 	                 " FROM MEMBER\n" + 
 	                 " WHERE DELYN = 'N'";
 	    return jdbc.selectList(sql);
@@ -89,7 +89,7 @@ public class AdminDao {
 	
 	// 관리자 - 거래글 리스트
 	public List<BoardVo> adminBoardList() {
-		String sql =" SELECT BOARD_NO, BOARD_TITLE, BOARD_PRICE, TO_CHAR(BOARD_DATE, 'YYYY/MM/DD') BOARD_DATE, BOARD_STAT, MEM_SELLER\n" + 
+		String sql =" SELECT BOARD_NO, RPAD(BOARD_TITLE,40,' ') BOARD_TITLE, BOARD_PRICE, TO_CHAR(BOARD_DATE, 'YYYY/MM/DD') BOARD_DATE, BOARD_STAT, MEM_SELLER\n" + 
 					" FROM BOARD\n" + 
 					" WHERE DELYN = 'N'";
 		return jdbc.selectList(sql,BoardVo.class);

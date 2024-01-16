@@ -295,6 +295,7 @@ public class BoardDao {
 			jdbc.update(sql);
 	}
 	
+	// 회원 - 공지사항
 	public List<Map<String, Object>> noticeList() {
 	    String sql = " SELECT NOTICE_NO, SUBSTR(NOTICE_TITLE,0,10) NOTICE_TITLE, SUBSTR(NOTICE_MES,0,20) NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\n" + 
 	                 " FROM NOTICE\n" + 
@@ -302,6 +303,8 @@ public class BoardDao {
 	    return jdbc.selectList(sql);
 	}
 	
+	// 회원 - 공지사항 상세보기
+	/* 추후 content 부분 개행 필요 */
 	public Map<String, Object> noticeDetail(int no) {
 		String sql = " SELECT NOTICE_NO, NOTICE_TITLE, NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\r\n" + 
 					" FROM NOTICE\r\n" + 

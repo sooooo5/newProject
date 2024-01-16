@@ -105,19 +105,23 @@ public class BoardService {
 	
 	public void memDel(String id) {
 		dao.memDel(id);
-			}
+	}
+	
+	// 회원 - 공지사항 리스트
 	public List<Map<String, Object>> noticeList() {
 		List<Map<String, Object>> list = dao.noticeList();
 		
 		for (Map<String, Object> map : list) {
 			String title   = (String) map.get("NOTICE_TITLE");
 			String content = (String) map.get("NOTICE_MES");
+			// 글 출력 길이 제한
 			if(title.length() > 5) {
 				title = title.substring(0, 5)+"...";
 			}
 			if(content.length() > 10) {
 				content = content.substring(0, 10)+"...";
 			}
+			// 개행문자 제거
 			content = content.replace("\n", "");
 			content = content.replace("\r", "");
 			content = content.replace("\r\n", "");
@@ -128,6 +132,7 @@ public class BoardService {
 		return list;
 	}
 
+	// 회원 - 공지사항 상세보기
 	public Map<String, Object> noticeDetail(int no) {
 		return dao.noticeDetail(no);
 	}
