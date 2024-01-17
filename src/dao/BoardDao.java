@@ -22,18 +22,25 @@ public class BoardDao {
 	}
 	JDBCUtil jdbc = JDBCUtil.getInstance();
 	
-	public List<BoardVo> printBoard(List<Object>param) {
+	public List<BoardVo> printBoard(List<Object>param,int ano) {
 		String sql ="SELECT *\r\n" + 
-				"FROM (SELECT ROWNUM RN, A.* FROM\r\n" + 
-				"        (SELECT \r\n" + 
-				"    BOARD_NO, \r\n" + 
-				"    RPAD(BOARD_TITLE,40,' ') BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
-				"    BOARD_PRICE, \r\n" + 
-				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N') A)\r\n" + 
+				"FROM (\r\n" + 
+				"    SELECT ROWNUM RN, A.*\r\n" + 
+				"    FROM (\r\n" + 
+				"        SELECT \r\n" + 
+				"            BOARD_NO, \r\n" + 
+				"            RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"            SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
+				"            BOARD_PRICE, \r\n" + 
+				"            TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"            BOARD_STAT, \r\n" + 
+				"            BOARD_LIKE\r\n" + 
+				"        FROM BOARD B\r\n" + 
+				"        INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"        WHERE B.DELYN = 'N'\r\n" + 
+				"        AND M.AREA_NO = "+ano+"\r\n" + 
+				"    ) A\r\n" + 
+				")\r\n" + 
 				"WHERE RN BETWEEN ? AND ?";
 		return jdbc.selectList(sql,param,BoardVo.class);
 	}
@@ -135,96 +142,109 @@ public class BoardDao {
 		jdbc.update(sql, param);
 	}
 	
-	public List<BoardVo> boardSearch(int cate) {
+	public List<BoardVo> boardSearch(int cate,int ano) {
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
-				"AND CATE_ID = "+cate;
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND B.CATE_ID = "+cate+"\r\n" + 
+				"AND M.AREA_NO = "+ano;
 		return jdbc.selectList(sql, BoardVo.class);
 	}
-	public List<BoardVo> boardSearch(String title) {
+	public List<BoardVo> boardSearch(String title,int ano) {
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
-				"AND BOARD_TITLE LIKE '%"+title+"%'";
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND BOARD_TITLE LIKE '%"+title+"%'\r\n" + 
+				"AND M.AREA_NO = "+ano;
 		return jdbc.selectList(sql, BoardVo.class);
 	}
-	public List<BoardVo> boardSearch2(String content) {
+	public List<BoardVo> boardSearch2(String content,int ano) {
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
-				"AND BOARD_CONTENT LIKE '%"+content+"%'";
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND BOARD_CONTENT LIKE '%"+content+"%'\r\n" + 
+				"AND M.AREA_NO = "+ano;
 		return jdbc.selectList(sql, BoardVo.class);
 	}
 	
-	public List<BoardVo> boardPrice(){
+	public List<BoardVo> boardPrice(int ano){
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND M.AREA_NO = "+ano+"\r\n" + 
 				"ORDER BY BOARD_PRICE DESC";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
-	public List<BoardVo> boardTem(){
+	public List<BoardVo> boardTem(int ano){
 		String sql = "SELECT \r\n" + 
-				"    B.BOARD_NO, \r\n" + 
-				"    B.BOARD_TITLE, \r\n" + 
-				"    SUBSTR(B.BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
-				"    B.BOARD_PRICE, \r\n" + 
-				"    TO_CHAR(B.BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    B.BOARD_STAT\r\n" + 
-				"FROM BOARD B, MEMBER M\r\n" + 
+				"    BOARD_NO, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
+				"    BOARD_PRICE, \r\n" + 
+				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
+				"    BOARD_STAT\r\n" + 
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
-				"AND B.MEM_BUYER =M.MEM_ID\r\n" + 
+				"AND M.AREA_NO = "+ano+"\r\n" + 
 				"ORDER BY M.MEM_TEM DESC";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
-	public List<BoardVo> boardLike(){
+	public List<BoardVo> boardLikeSort(int ano){
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND M.AREA_NO = +"+ano+"\r\n" + 
 				"ORDER BY BOARD_LIKE DESC";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
-	public List<BoardVo> boardNew(){
+	public List<BoardVo> boardNew(int ano){
 		String sql = "SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
-				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
+				"    RPAD(BOARD_TITLE, 40, ' ') AS BOARD_TITLE, \r\n" + 
+				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT\r\n" + 
-				"FROM BOARD\r\n" + 
-				"WHERE DELYN = 'N'\r\n" + 
+				"FROM BOARD B\r\n" + 
+				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
+				"WHERE B.DELYN = 'N'\r\n" + 
+				"AND M.AREA_NO = "+ano+"\r\n" + 
 				"ORDER BY BOARD_NO DESC";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
@@ -295,7 +315,7 @@ public class BoardDao {
 			jdbc.update(sql);
 	}
 	
-	// È¸¿ø - °øÁö»çÇ×
+	// È¸ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public List<Map<String, Object>> noticeList() {
 	    String sql = " SELECT NOTICE_NO, SUBSTR(NOTICE_TITLE,0,10) NOTICE_TITLE, SUBSTR(NOTICE_MES,0,20) NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\n" + 
 	                 " FROM NOTICE\n" + 
@@ -303,8 +323,8 @@ public class BoardDao {
 	    return jdbc.selectList(sql);
 	}
 	
-	// È¸¿ø - °øÁö»çÇ× »ó¼¼º¸±â
-	/* ÃßÈÄ content ºÎºÐ °³Çà ÇÊ¿ä */
+	// È¸ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ó¼¼ºï¿½ï¿½ï¿½
+	/* ï¿½ï¿½ï¿½ï¿½ content ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ */
 	public Map<String, Object> noticeDetail(int no) {
 		String sql = " SELECT NOTICE_NO, NOTICE_TITLE, NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\r\n" + 
 					" FROM NOTICE\r\n" + 

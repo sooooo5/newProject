@@ -24,8 +24,8 @@ public class BoardService {
 	}
 	BoardDao dao = BoardDao.getInstance();
 	
-	public List<BoardVo> printBoard(List<Object>param){
-		return dao.printBoard(param);
+	public List<BoardVo> printBoard(List<Object>param,int ano){
+		return dao.printBoard(param,ano);
 	}
 	
 	public BoardVo boardDetail(int sel) {
@@ -64,28 +64,28 @@ public class BoardService {
 		dao.boardWrite(param, id);
 	}
 	
-	public List<BoardVo> boardSearch(int cate){
-		return dao.boardSearch(cate);
+	public List<BoardVo> boardSearch(int cate, int ano){
+		return dao.boardSearch(cate,ano);
 	}
-	public List<BoardVo> boardSearch(String title){
-		return dao.boardSearch(title);
+	public List<BoardVo> boardSearch(String title, int ano){
+		return dao.boardSearch(title,ano);
 	}
-	public List<BoardVo> boardSearch2(String content){
-		return dao.boardSearch2(content);
-	}
-	
-	public List<BoardVo> boardPrice(){
-		return dao.boardPrice();
+	public List<BoardVo> boardSearch2(String content, int ano){
+		return dao.boardSearch2(content,ano);
 	}
 	
-	public List<BoardVo> boardTem(){
-		return dao.boardTem();
+	public List<BoardVo> boardPrice(int ano){
+		return dao.boardPrice(ano);
 	}
-	public List<BoardVo> boardLike(){
-		return dao.boardLike();
+	
+	public List<BoardVo> boardTem(int ano){
+		return dao.boardTem(ano);
 	}
-	public List<BoardVo> boardNew(){
-		return dao.boardNew();
+	public List<BoardVo> boardLikeSort(int ano){
+		return dao.boardLikeSort(ano);
+	}
+	public List<BoardVo> boardNew(int ano){
+		return dao.boardNew(ano);
 	}
 	
 	public List<BoardVo> mySell(String id){
@@ -107,21 +107,21 @@ public class BoardService {
 		dao.memDel(id);
 	}
 	
-	// È¸¿ø - °øÁö»çÇ× ¸®½ºÆ®
+	// È¸ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	public List<Map<String, Object>> noticeList() {
 		List<Map<String, Object>> list = dao.noticeList();
 		
 		for (Map<String, Object> map : list) {
 			String title   = (String) map.get("NOTICE_TITLE");
 			String content = (String) map.get("NOTICE_MES");
-			// ±Û Ãâ·Â ±æÀÌ Á¦ÇÑ
+			// ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			if(title.length() > 5) {
 				title = title.substring(0, 5)+"...";
 			}
 			if(content.length() > 10) {
 				content = content.substring(0, 10)+"...";
 			}
-			// °³Çà¹®ÀÚ Á¦°Å
+			// ï¿½ï¿½ï¿½à¹®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			content = content.replace("\n", "");
 			content = content.replace("\r", "");
 			content = content.replace("\r\n", "");
@@ -132,7 +132,7 @@ public class BoardService {
 		return list;
 	}
 
-	// È¸¿ø - °øÁö»çÇ× »ó¼¼º¸±â
+	// È¸ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ó¼¼ºï¿½ï¿½ï¿½
 	public Map<String, Object> noticeDetail(int no) {
 		return dao.noticeDetail(no);
 	}

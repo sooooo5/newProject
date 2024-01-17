@@ -852,31 +852,33 @@ public class MainController extends Print {
 	}
 
 	private View boardSort() {
+		UserVo user = (UserVo) sessionStorage.get("user");
+		int ano = user.getArea_no();
 		System.out.println("1.가격순 정렬");
 		System.out.println("2.매너온도순 정렬");
 		System.out.println("3.좋아요순 정렬");
 		System.out.println("4.작성순 정렬");
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
-			List<BoardVo>list = boardService.boardPrice();
+			List<BoardVo>list = boardService.boardPrice(ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
 		}
 		if(sel == 2) {
-			List<BoardVo>list = boardService.boardTem();
+			List<BoardVo>list = boardService.boardTem(ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
 		}
 		if(sel == 3) {
-			List<BoardVo>list = boardService.boardLike();
+			List<BoardVo>list = boardService.boardLikeSort(ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
 		}
 		if(sel == 4) {
-			List<BoardVo>list = boardService.boardNew();
+			List<BoardVo>list = boardService.boardNew(ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
@@ -885,6 +887,8 @@ public class MainController extends Print {
 	}
 
 	private View boardSearch() {
+		UserVo user = (UserVo) sessionStorage.get("user");
+		int ano = user.getArea_no();
 		System.out.println("1. 카테고리 검색");
 		System.out.println("2. 제목 검색");
 		System.out.println("3. 내용 검색");
@@ -892,7 +896,7 @@ public class MainController extends Print {
 		if(sel == 1) {
 			System.out.println("1.전자기기 2.가구 3.주방 4.도서 5.의류 6.스포츠 7.게임 8.식품 9.기타");
 			int cate = ScanUtil.nextInt("카테고리>>");
-			List<BoardVo> list = boardService.boardSearch(cate);
+			List<BoardVo> list = boardService.boardSearch(cate,ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
@@ -900,7 +904,7 @@ public class MainController extends Print {
 		}
 		if(sel == 2) {
 			String title = ScanUtil.nextLine("제목>>");
-			List<BoardVo> list = boardService.boardSearch(title);
+			List<BoardVo> list = boardService.boardSearch(title,ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
@@ -908,7 +912,7 @@ public class MainController extends Print {
 		}
 		if(sel == 3) {
 			String content = ScanUtil.nextLine("내용>>");
-			List<BoardVo> list = boardService.boardSearch2(content);
+			List<BoardVo> list = boardService.boardSearch2(content,ano);
 			for (BoardVo boardVo : list) {
 				System.out.println(boardVo);
 			}
@@ -969,6 +973,8 @@ public class MainController extends Print {
 		int board_like = list.getBoard_like();
 		String mem_seller = list.getMem_seller();
 		int cate_id = list.getCate_id();
+		
+		
 		System.out.println(list); //나중에 위에 겟으로 꺼내온걸로 디자인
 		
 		sessionStorage.put("seller", mem_seller);  //판매자 이름 저장;
@@ -1050,8 +1056,10 @@ public class MainController extends Print {
 		List<Object> param = new ArrayList();
 		param.add(start);
 		param.add(end);
+		UserVo user = (UserVo) sessionStorage.get("user");
+		int ano = user.getArea_no();
 		
-		List<BoardVo> list =  boardService.printBoard(param);
+		List<BoardVo> list =  boardService.printBoard(param,ano);
 		for (BoardVo boardVo : list) {
 			System.out.println(boardVo);
 		}
