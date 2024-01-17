@@ -28,13 +28,15 @@ public class NotiDao {
 		String sql = "SELECT *\r\n" + 
 				"FROM (SELECT ROWNUM RN, A.* FROM\r\n" + 
 				"        (SELECT\r\n" + 
-				"    MESSAGE_ID,\r\n" + 
-				"    MESSAGE_CONTENT,\r\n" + 
-				"    TO_CHAR(MESSAGE_DATE, 'MM/DD') MESSAGE_DATE,\r\n" + 
-				"    MEM_ID,\r\n" + 
-				"    MEM_ID2\r\n" + 
-				"FROM MESSAGE\r\n" + 
-				"WHERE CHAT_NO = "+no+") A)"; 
+				"    S.MESSAGE_ID,\r\n" + 
+				"    S.MESSAGE_CONTENT,\r\n" + 
+				"    TO_CHAR(S.MESSAGE_DATE, 'MM/DD') MESSAGE_DATE,\r\n" + 
+				"    S.MEM_ID,\r\n" + 
+				"    S.MEM_ID2,\r\n" + 
+				"    M.MEM_NICK\r\n" + 
+				"FROM MESSAGE S, MEMBER M\r\n" + 
+				"WHERE CHAT_NO = "+no+"\r\n" + 
+				"AND S.MEM_ID =M.MEM_ID) A)"; 
 		return jdbc.selectList(sql, MessageVo.class);
 	}
 }

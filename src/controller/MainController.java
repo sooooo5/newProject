@@ -150,7 +150,7 @@ public class MainController extends Print {
 		boolean flag =true;
 		
 		while(flag) {
-			String message = ScanUtil.nextLine("메세지입력>>  (exit 입력시 종료)");
+			String message = ScanUtil.nextLine("메세지입력>>  (exit 입력시 종료)\n");
 			if(message.equals("exit")) {
 				ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
 				tn.setStop(true);
@@ -200,13 +200,20 @@ public class MainController extends Print {
 		}
 		return View.CHAT_LIST;
 	}
-
+	//끝
 	private View myBuy() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
 		List<BoardVo> list = boardService.myBuy(id);
 		for (BoardVo boardVo : list) {
-			System.out.println(boardVo);
+			int no =boardVo.getBoard_no();
+			String title = boardVo.getBoard_title();
+			String content = boardVo.getBoard_content();
+			int price = boardVo.getBoard_price();
+			String date = boardVo.getBoard_date();
+			String stat = boardVo.getBoard_stat();
+			int like = boardVo.getBoard_like();
+			System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);;
 		}
 		System.out.println("1.게시글 상세보기");
 		System.out.println("2.돌아가기");
@@ -311,13 +318,21 @@ public class MainController extends Print {
 		boardService.myProfileUpdate(param, sel);
 		return View.BOARD_MY_PROFILE;
 	}
-
+	//끝
 	private View mySell() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
+		System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 		List<BoardVo> list = boardService.mySell(id);
 		for (BoardVo boardVo : list) {
-			System.out.println(boardVo);
+			int no =boardVo.getBoard_no();
+			String title = boardVo.getBoard_title();
+			String content = boardVo.getBoard_content();
+			int price = boardVo.getBoard_price();
+			String date = boardVo.getBoard_date();
+			String stat = boardVo.getBoard_stat();
+			int like = boardVo.getBoard_like();
+			System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 		}
 		System.out.println("1.게시글 상세보기");
 		System.out.println("2.돌아가기");
@@ -357,12 +372,20 @@ public class MainController extends Print {
 		}
 		return View.BOARD_RESULT;
 	}
-	
+	//끝
 	private View boardSellerItem() {
 		String seller = (String) sessionStorage.get("seller");
+		System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 		List<BoardVo> sellerI = boardService.boardSellerItem(seller);
 		for (BoardVo boardVo : sellerI) {
-			System.out.println(boardVo);
+			int no =boardVo.getBoard_no();
+			String title = boardVo.getBoard_title();
+			String content = boardVo.getBoard_content();
+			int price = boardVo.getBoard_price();
+			String date = boardVo.getBoard_date();
+			String stat = boardVo.getBoard_stat();
+			int like = boardVo.getBoard_like();
+			System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 		}
 		System.out.println("1. 판매글 상세보기");
 		System.out.println("2. 돌아가기");
@@ -381,12 +404,16 @@ public class MainController extends Print {
 			return View.BOARD_SELLER_ITEM;
 		}
 	}
-
+	//끝
 	private View boardSeller() {
 		String seller = (String) sessionStorage.get("seller");
 		List<UserVo> sellerP = boardService.boardSeller(seller);
+		System.out.println("닉네임\t매너온도\t지역번호");
 		for (UserVo userVo : sellerP) {
-			System.out.println(userVo);
+			String nick = userVo.getMem_nick();
+			int tem = userVo.getMem_tem();
+			int area = userVo.getArea_no();
+			System.out.println(nick+"\t"+tem+"\t"+area);
 		}
 		System.out.println("1.판매 목록 보기");
 		System.out.println("2.돌아가기");
@@ -404,9 +431,15 @@ public class MainController extends Print {
 
 	private View boardDel() {
 		int con = (int) sessionStorage.get("bno");
-		boardService.boardDel(con);
-		System.out.println("삭제 되었습니다.");
-		return View.BOARD_LIST;
+		String yn =ScanUtil.nextLine("삭제 하시겠습니까? (y/n)");
+		if(yn.equalsIgnoreCase("y")) {
+			boardService.boardDel(con);
+			System.out.println("삭제 되었습니다.");
+			return View.BOARD_LIST;
+		}else {
+			return View.BOARD_DETAIL;
+		}
+		
 	}
 
 	private View boardUpdate() {
@@ -783,13 +816,17 @@ public class MainController extends Print {
 	
 	
 	
-
+	//끝
 	private View boardMyProfile() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
+		System.out.println("닉네임\t온도\t지역번호");
 		List<UserVo> list = boardService.printMyProfile(id);
 		for (UserVo userVo : list) {
-			System.out.println(userVo);
+			String nick = userVo.getMem_nick();
+			int tem = userVo.getMem_tem();
+			int area = userVo.getArea_no();
+			System.out.println(nick+"\t"+tem+"\t"+area);
 		}
 		
 		System.out.println("1. 내 판매목록");
@@ -814,20 +851,20 @@ public class MainController extends Print {
 			return View.BOARD_MY_PROFILE;
 		}
 	}
-
+	//끝
 	private View chatList() {
 		UserVo user = (UserVo) MainController.sessionStorage.get("user");
 		String id = user.getMem_id();
 		List<Object>param = new ArrayList();
 		param.add(id);
 		param.add(id);
-		
+		System.out.println("채팅방번호\t게시물번호\t게시물제목");
 		List<Map<String, Object>> list = boardService.chatList(param);
 		for (Map<String, Object> map : list) {
 			BigDecimal cno =(BigDecimal) map.get("CHAT_NO");
 			BigDecimal bno =(BigDecimal) map.get("BOARD_NO");
 			String bt =(String) map.get("BOARD_TITLE");
-			System.out.println("채팅방 번호: "+cno+"게시물 번호: "+bno+"게시물 제목: "+bt);
+			System.out.println(cno+"\t"+bno+"\t"+bt);
 		}
 		
 		System.out.println("1.채팅방 선택");
@@ -850,7 +887,7 @@ public class MainController extends Print {
 		}
 		return View.BOARD_LIST;
 	}
-
+	//끝
 	private View boardSort() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		int ano = user.getArea_no();
@@ -860,32 +897,64 @@ public class MainController extends Print {
 		System.out.println("4.작성순 정렬");
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo>list = boardService.boardPrice(ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 		}
 		if(sel == 2) {
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo>list = boardService.boardTem(ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 		}
 		if(sel == 3) {
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo>list = boardService.boardLikeSort(ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 		}
 		if(sel == 4) {
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo>list = boardService.boardNew(ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 		}
 		return View.BOARD_RESULT;
 	}
-
+	//끝
 	private View boardSearch() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		int ano = user.getArea_no();
@@ -896,25 +965,49 @@ public class MainController extends Print {
 		if(sel == 1) {
 			System.out.println("1.전자기기 2.가구 3.주방 4.도서 5.의류 6.스포츠 7.게임 8.식품 9.기타");
 			int cate = ScanUtil.nextInt("카테고리>>");
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch(cate,ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 			return View.BOARD_RESULT;
 		}
 		if(sel == 2) {
 			String title = ScanUtil.nextLine("제목>>");
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch(title,ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title1 = boardVo.getBoard_title();
+				String content = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title1+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 			return View.BOARD_RESULT;
 		}
 		if(sel == 3) {
 			String content = ScanUtil.nextLine("내용>>");
+			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch2(content,ano);
 			for (BoardVo boardVo : list) {
-				System.out.println(boardVo);
+				int no =boardVo.getBoard_no();
+				String title1 = boardVo.getBoard_title();
+				String content1 = boardVo.getBoard_content();
+				int price = boardVo.getBoard_price();
+				String date = boardVo.getBoard_date();
+				String stat = boardVo.getBoard_stat();
+				int like = boardVo.getBoard_like();
+				System.out.println(no+"\t"+title1+"\t"+content1+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 			}
 			return View.BOARD_RESULT;
 		}
@@ -959,7 +1052,7 @@ public class MainController extends Print {
 		return View.BOARD_LIST;
 	}
 	
-	
+	//끝
 	private View boardDtail() {
 		int sel = (int) sessionStorage.get("bno");
 		boardService.boardDetail(sel);
@@ -985,6 +1078,7 @@ public class MainController extends Print {
 		System.out.println("4. 좋아요 누르기");
 		System.out.println("5. 판매자 프로필 보기");
 		System.out.println("6. 게시글 리스트");
+		
 		int con = ScanUtil.menu();
 		if(con == 4) {
 			boardService.boardLike(sel);
@@ -1011,18 +1105,45 @@ public class MainController extends Print {
 		param.add(id);
 		param.add(seller);
 		
+		boolean flag = false;
+		List<Map<String, Object>> check = boardService.checkChatRoom();
+		for (Map<String, Object> map : check) {
+			int a =Integer.valueOf(String.valueOf(map.get("CHAT_NO")));
+			int b =Integer.valueOf(String.valueOf(map.get("BOARD_NO")));
+			String checkId = (String) map.get("MEM_ID");
+			String checkSeller = (String) map.get("MEM_ID2");
+			String checkDel =(String) map.get("DELYN");
+			if(b==board_no&&checkId.equals(id)&&checkSeller.equals(seller)&&checkDel.equals("N")) {
+				flag = true;
+				sessionStorage.put("chatno", a);
+				break;
+			}
+		}
+		
+		
+		
 		switch (con) {
 		case 1: 
+			if(id.equals(mem_seller)) {
+				System.out.println("자신과 대화할 수 없습니다.");
+				return View.BOARD_DETAIL;
+			}if(flag) {
+				System.out.println("이전 채팅방으로 입장합니다.");
+				sessionStorage.put("bno", board_no);
+				ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
+				tn.setStop(false);
+			}
+			else {
 			boardService.makeChatRoom(param,sel);
 			Map<String, Object> number = boardService.maxChatRoomNum();
-			int no = Integer.valueOf(String.valueOf(number.get("COUNT(*)")));
+			int no = Integer.valueOf(String.valueOf(number.get("MAX(CHAT_NO)")));
 			sessionStorage.put("chatno", no);
-			Map<String, Object> oBno = boardService.loadBno(con);
-			int bno = Integer.valueOf(String.valueOf(oBno.get("BOARD_NO")));
-			sessionStorage.put("bno", bno);
+			sessionStorage.put("bno", board_no);
 			
 			ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
 			tn.setStop(false);
+			}
+			
 			return View.CHAT_LOG;
 		case 2:
 			return View.BOARD_UPDATE;
@@ -1039,7 +1160,7 @@ public class MainController extends Print {
 		}
 		
 	}
-
+	//끝
 	private View boardList() {
 		sessionStorage.remove("seller");
 		sessionStorage.remove("bno");

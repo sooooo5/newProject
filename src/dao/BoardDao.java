@@ -122,7 +122,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" + 
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD\r\n" + 
 				"WHERE DELYN = 'N'\r\n"+
 				"AND MEM_SELLER ='"+seller+"'";
@@ -149,7 +150,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" + 
+				"    BOARD_LIKE\r\n" + 
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -164,7 +166,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" +
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -179,7 +182,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" +
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -195,12 +199,13 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" +
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
 				"AND M.AREA_NO = "+ano+"\r\n" + 
-				"ORDER BY BOARD_PRICE DESC";
+				"ORDER BY BOARD_PRICE ASC";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
 	public List<BoardVo> boardTem(int ano){
@@ -210,7 +215,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" +
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -225,7 +231,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" +
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -240,7 +247,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT, 1, 20) AS BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" + 
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD B\r\n" + 
 				"INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"WHERE B.DELYN = 'N'\r\n" + 
@@ -256,7 +264,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" + 
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD\r\n" + 
 				"WHERE MEM_SELLER = '"+id+"'";
 		return jdbc.selectList(sql,BoardVo.class);
@@ -268,7 +277,8 @@ public class BoardDao {
 				"    SUBSTR(BOARD_CONTENT,0,20) BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
-				"    BOARD_STAT\r\n" + 
+				"    BOARD_STAT, \r\n" + 
+				"    BOARD_LIKE\r\n" +
 				"FROM BOARD\r\n" + 
 				"WHERE MEM_BUYER = '"+id+"'";
 		return jdbc.selectList(sql,BoardVo.class);
@@ -346,20 +356,22 @@ public class BoardDao {
 	}
 	
 	public Map<String, Object> maxChatRoomNum() {
-		String sql = "SELECT COUNT(*)\r\n" + 
+		String sql = "SELECT MAX(CHAT_NO)\r\n" + 
 				"FROM CHATROOM";
 		return jdbc.selectOne(sql);
 	}
 	
 	public List<Map<String, Object>> chatList(List<Object>param) {
-		String sql = "SELECT \r\n" + 
-				"    CHAT_NO,\r\n" + 
-				"    BOARD_NO,\r\n" + 
-				"    MEM_ID,\r\n" + 
-				"    MEM_ID2\r\n" + 
-				"FROM CHATROOM\r\n" + 
-				"WHERE MEM_ID = ?\r\n" + 
-				"OR MEM_ID2 = ?";
+		String sql = "SELECT\r\n" + 
+				"    C.CHAT_NO,\r\n" + 
+				"    C.BOARD_NO,\r\n" + 
+				"    C.MEM_ID,\r\n" + 
+				"    C.MEM_ID2,\r\n" + 
+				"    B.BOARD_TITLE\r\n" + 
+				"FROM CHATROOM C, BOARD B\r\n" + 
+				"WHERE C.BOARD_NO = B.BOARD_NO \r\n" + 
+				"AND C.MEM_ID = ?\r\n" + 
+				"OR  C.MEM_ID2 = ?";
 		return jdbc.selectList(sql, param);
 	}
 	
@@ -370,13 +382,6 @@ public class BoardDao {
 		jdbc.update(sql);
 	}
 	
-	public Map<String, Object> loadBno(int con) {
-		String sql = "SELECT\r\n" + 
-				"    BOARD_NO\r\n" + 
-				"FROM CHATROOM\r\n" + 
-				"WHERE CHAT_NO = "+con;
-		return jdbc.selectOne(sql);
-	}
 	public void finishSell(int bno) {
 		String sql ="UPDATE BOARD\r\n" + 
 				"SET BOARD_STAT = 'Y'\r\n" + 
@@ -410,5 +415,11 @@ public class BoardDao {
 				"WHERE CHAT_NO ="+con;
 		
 		return jdbc.selectOne(sql);
+	}
+	
+	public List<Map<String, Object>> checkChatRoom() {
+		String sql = "SELECT *\r\n" + 
+				"FROM CHATROOM";
+		return jdbc.selectList(sql);
 	}
 }

@@ -155,9 +155,6 @@ public class BoardService {
 		dao.delChatRoom(no);
 	}
 	
-	public Map<String, Object> loadBno(int con){
-		return dao.loadBno(con);
-	}
 	
 	public void finishSell(int bno) {
 		dao.finishSell(bno);
@@ -170,5 +167,9 @@ public class BoardService {
 	}
 	public Map<String, Object> readSeller(int con) {
 		return dao.readSeller(con);
+	}
+	
+	public List<Map<String, Object>> checkChatRoom(){
+		return dao.checkChatRoom();
 	}
 }

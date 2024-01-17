@@ -10,4 +10,6 @@ public class MessageVo {
 	 private int chat_no;
 	 private String mem_id;
 	 private String mem_id2;
+	 private int rn;
+	 private String mem_nick;
 }

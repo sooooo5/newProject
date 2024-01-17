@@ -33,13 +33,16 @@ public class ThreadNoti extends Thread {
 		int no = (int) MainController.sessionStorage.get("chatno");
 		List<MessageVo> l = ns.getNoti(no);
 		
-		
 		for (MessageVo f : l) {
 			int cno = f.getMessage_id();
 			if (messge.containsKey(cno)) {
 				continue;
 			}
-			System.out.println(f);
+			int rn = f.getRn();
+			String send = f.getMem_nick();
+			String content = f.getMessage_content();
+			String date = f.getMessage_date();
+			System.out.println("번호:"+rn+"보낸사람:"+send+"내용"+content+"날짜"+date);
 			messge.put(cno, "");
 		}
 	}
