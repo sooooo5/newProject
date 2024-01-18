@@ -9,10 +9,10 @@ public class ScanUtil extends Print{
 	static Scanner sc = new Scanner(System.in);
 	
 	public static int menu() {
-		return nextInt(customOrange + "메뉴 선택 : " + exit);
+		return nextInt(orange + "메뉴 선택 : " + exit);
 	}
 	public static String nextLine(String print) {
-		System.out.print(customOrange + print + exit);
+		System.out.print(orange + print + exit);
 		return nextLine();
 	}
 	
@@ -21,7 +21,7 @@ public class ScanUtil extends Print{
 	}
 	
 	public static int nextInt(String print) {
-		System.out.print(print);
+		System.out.print(orange + print + exit);
 		return nextInt();
 	}
 	
@@ -31,7 +31,7 @@ public class ScanUtil extends Print{
 				int result = Integer.parseInt(sc.nextLine());
 				return result;
 			}catch (NumberFormatException e) {
-				System.out.println("잘못 입력!!");
+				System.out.println(green + "잘못 입력하셨습니다." + exit);
 			}
 		}
 	}

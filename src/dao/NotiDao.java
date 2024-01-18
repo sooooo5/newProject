@@ -30,13 +30,14 @@ public class NotiDao {
 				"        (SELECT\r\n" + 
 				"    S.MESSAGE_ID,\r\n" + 
 				"    S.MESSAGE_CONTENT,\r\n" + 
-				"    TO_CHAR(S.MESSAGE_DATE, 'MM/DD') MESSAGE_DATE,\r\n" + 
+				"    TO_CHAR(S.MESSAGE_DATE, 'MM-DD HH24:MI') MESSAGE_DATE,\r\n" + 
 				"    S.MEM_ID,\r\n" + 
 				"    S.MEM_ID2,\r\n" + 
 				"    M.MEM_NICK\r\n" + 
 				"FROM MESSAGE S, MEMBER M\r\n" + 
 				"WHERE CHAT_NO = "+no+"\r\n" + 
-				"AND S.MEM_ID =M.MEM_ID) A)"; 
+				"AND S.MEM_ID =M.MEM_ID  "   +
+				"ORDER BY S.MESSAGE_ID) A)"; 
 		return jdbc.selectList(sql, MessageVo.class);
 	}
 }

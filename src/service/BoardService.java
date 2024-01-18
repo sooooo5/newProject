@@ -48,8 +48,8 @@ public class BoardService {
 		dao.boardUpdate(list, sel);
 	}
 	
-	public List<UserVo> boardSeller(String seller){
-		return dao.boardSeller(seller);
+	public List<UserVo> boardSeller(List<Object>param){
+		return dao.boardSeller(param);
 	}
 	
 	public List<BoardVo> boardSellerItem(String seller){
@@ -92,7 +92,7 @@ public class BoardService {
 		return dao.mySell(id);
 	}
 	public List<BoardVo> myBuy(String id){
-		return dao.mySell(id);
+		return dao.myBuy(id);
 	}
 	
 	public List<UserVo> printMyProfile(String id){
@@ -159,6 +159,9 @@ public class BoardService {
 	public void finishSell(int bno) {
 		dao.finishSell(bno);
 	}
+	public void finishSeller(String seller, int bno) {
+		dao.finishSeller(seller, bno);
+	}
 	public List<MessageVo> pastMessage(int no){
 		return dao.pastMessage(no);
 	}
@@ -171,5 +174,8 @@ public class BoardService {
 	
 	public List<Map<String, Object>> checkChatRoom(){
 		return dao.checkChatRoom();
+	}
+	public void temUpdate(String s) {
+		dao.temUpdate(s);
 	}
 }

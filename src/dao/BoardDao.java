@@ -22,6 +22,8 @@ public class BoardDao {
 	}
 	JDBCUtil jdbc = JDBCUtil.getInstance();
 	
+	
+	// 회원 - 거래글 리스트
 	public List<BoardVo> printBoard(List<Object>param,int ano) {
 		String sql ="SELECT *\r\n" + 
 				"FROM (\r\n" + 
@@ -38,6 +40,7 @@ public class BoardDao {
 				"        FROM BOARD B\r\n" + 
 				"        INNER JOIN MEMBER M ON B.MEM_SELLER = M.MEM_ID\r\n" + 
 				"        WHERE B.DELYN = 'N'\r\n" + 
+				"        AND B.BOARD_STAT = 'N'" + 
 				"        AND M.AREA_NO = "+ano+"\r\n" + 
 				"    ) A\r\n" + 
 				")\r\n" + 
@@ -45,16 +48,19 @@ public class BoardDao {
 		return jdbc.selectList(sql,param,BoardVo.class);
 	}
 	
+	
+	// 회원 - 거래글 상세보기
 	public BoardVo boardDetail(int sel){
 		String sql ="SELECT \r\n" + 
 				"    BOARD_NO, \r\n" + 
-				"    BOARD_TITLE, \r\n" + 
+				"    RPAD(BOARD_TITLE,40,' ') BOARD_TITLE, \r\n" + 
 				"    BOARD_CONTENT, \r\n" + 
 				"    BOARD_PRICE, \r\n" + 
 				"    TO_CHAR(BOARD_DATE,'YYYY/MM/DD') BOARD_DATE, \r\n" + 
 				"    BOARD_STAT,\r\n" + 
 				"    BOARD_LIKE,\r\n" + 
-				"    MEM_SELLER,\r\n" + 
+				"    BOARD_VIEWS,\r\n" + 
+				"    RPAD(MEM_SELLER,10,' ') MEM_SELLER,\r\n" + 
 				"    CATE_ID\r\n" + 
 				"FROM BOARD\r\n" + 
 				"WHERE BOARD_NO = "+sel;
@@ -105,14 +111,14 @@ public class BoardDao {
 			jdbc.update(sql, list);
 	}
 	
-	public List<UserVo> boardSeller(String seller) {
-		String sql = "SELECT\r\n" + 
-				"    MEM_NICK,\r\n" + 
-				"    MEM_TEM,\r\n" + 
-				"    AREA_NO\r\n" + 
-				"    FROM MEMBER\r\n" + 
-				"    WHERE MEM_ID = '"+seller+"'";
-		return jdbc.selectList(sql, UserVo.class);
+	public List<UserVo> boardSeller(List<Object>param) {
+		String sql = "SELECT\n" + 
+				"    MEM_NICK,\n" + 
+				"    MEM_TEM,\n" + 
+				"    AREA_NO\n" + 
+				"FROM MEMBER\n" + 
+				"WHERE MEM_ID = ?";
+		return jdbc.selectList(sql,param, UserVo.class);
 	}
 	
 	public List<BoardVo> boardSellerItem(String seller) {
@@ -280,7 +286,8 @@ public class BoardDao {
 				"    BOARD_STAT, \r\n" + 
 				"    BOARD_LIKE\r\n" +
 				"FROM BOARD\r\n" + 
-				"WHERE MEM_BUYER = '"+id+"'";
+				"WHERE MEM_BUYER = '"+id+"'\r\n" +
+				"AND NOT MEM_BUYER = MEM_SELLER";
 		return jdbc.selectList(sql,BoardVo.class);
 	}
 	
@@ -325,7 +332,7 @@ public class BoardDao {
 			jdbc.update(sql);
 	}
 	
-	// ȸ�� - ��������
+	// 회원 - 공지사항
 	public List<Map<String, Object>> noticeList() {
 	    String sql = " SELECT NOTICE_NO, SUBSTR(NOTICE_TITLE,0,10) NOTICE_TITLE, SUBSTR(NOTICE_MES,0,20) NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\n" + 
 	                 " FROM NOTICE\n" + 
@@ -333,8 +340,8 @@ public class BoardDao {
 	    return jdbc.selectList(sql);
 	}
 	
-	// ȸ�� - �������� �󼼺���
-	/* ���� content �κ� ���� �ʿ� */
+	// 회원 - 공지사항 상세보기
+	/* 추후 content 부분 개행 필요 */
 	public Map<String, Object> noticeDetail(int no) {
 		String sql = " SELECT NOTICE_NO, NOTICE_TITLE, NOTICE_MES, TO_CHAR(NOTICE_DATE, 'YYYY/MM/DD') NOTICE_DATE\r\n" + 
 					" FROM NOTICE\r\n" + 
@@ -369,7 +376,8 @@ public class BoardDao {
 				"    C.MEM_ID2,\r\n" + 
 				"    B.BOARD_TITLE\r\n" + 
 				"FROM CHATROOM C, BOARD B\r\n" + 
-				"WHERE C.BOARD_NO = B.BOARD_NO \r\n" + 
+				"WHERE C.BOARD_NO = B.BOARD_NO \r\n" +
+				"AND C.DELYN = 'N'\r\n" +
 				"AND C.MEM_ID = ?\r\n" + 
 				"OR  C.MEM_ID2 = ?";
 		return jdbc.selectList(sql, param);
@@ -385,6 +393,12 @@ public class BoardDao {
 	public void finishSell(int bno) {
 		String sql ="UPDATE BOARD\r\n" + 
 				"SET BOARD_STAT = 'Y'\r\n" + 
+				"WHERE BOARD_NO = "+bno;
+		jdbc.update(sql);
+	}
+	public void finishSeller(String seller, int bno) {
+		String sql = "UPDATE BOARD\n" + 
+				"SET MEM_BUYER = '"+seller+"'\n" + 
 				"WHERE BOARD_NO = "+bno;
 		jdbc.update(sql);
 	}
@@ -421,5 +435,12 @@ public class BoardDao {
 		String sql = "SELECT *\r\n" + 
 				"FROM CHATROOM";
 		return jdbc.selectList(sql);
+	}
+	
+	public void temUpdate(String s) {
+		String sql ="UPDATE MEMBER\n" + 
+				"SET MEM_TEM = MEM_TEM+1\n" + 
+				"WHERE MEM_ID = '"+s+"'";
+		jdbc.update(sql);
 	}
 }

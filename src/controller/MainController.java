@@ -174,7 +174,8 @@ public class MainController extends Print {
 		int bno = (int) sessionStorage.get("bno");
 		boolean flag =true;
 		
-				
+		
+		
 		System.out.println("1.채팅방 목록");
 		System.out.println("2.거래 확정");   //채팅방도 사라진다.
 		System.out.println("3.전체 게시판");
@@ -185,8 +186,11 @@ public class MainController extends Print {
 			return View.CHAT_LIST;
 		}
 		if(sel == 2) {
+			boardService.temUpdate(id);
+			boardService.temUpdate(seller);
 			boardService.delChatRoom(no);
 			boardService.finishSell(bno);
+			boardService.finishSeller(id, bno);
 			System.out.println("거래 완료!");
 			return View.CHAT_LIST;
 		}
@@ -200,7 +204,7 @@ public class MainController extends Print {
 		}
 		return View.CHAT_LIST;
 	}
-	//끝
+
 	private View myBuy() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
@@ -215,14 +219,14 @@ public class MainController extends Print {
 			int like = boardVo.getBoard_like();
 			System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);;
 		}
-		System.out.println("1.게시글 상세보기");
+		System.out.println("1.거래글 상세보기");
 		System.out.println("2.돌아가기");
 		
-		int con = ScanUtil.nextInt("게시글 번호 선택>>");
-		sessionStorage.put("bno", con);
 		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
+			int con = ScanUtil.nextInt("게시글 번호 >>");
+			sessionStorage.put("bno", con);
 			return View.BOARD_DETAIL;
 		case 2:
 			return View.BOARD_MY_PROFILE;
@@ -318,7 +322,7 @@ public class MainController extends Print {
 		boardService.myProfileUpdate(param, sel);
 		return View.BOARD_MY_PROFILE;
 	}
-	//끝
+
 	private View mySell() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
@@ -334,14 +338,14 @@ public class MainController extends Print {
 			int like = boardVo.getBoard_like();
 			System.out.println(no+"\t"+title+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
 		}
-		System.out.println("1.게시글 상세보기");
+		System.out.println("1.거래글 상세보기");
 		System.out.println("2.돌아가기");
 		
-		int con = ScanUtil.nextInt("게시글 번호 선택>>");
-		sessionStorage.put("bno", con);
 		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
+			int con = ScanUtil.nextInt("게시글 번호 >>");
+			sessionStorage.put("bno", con);
 			return View.BOARD_DETAIL;
 		case 2:
 			return View.BOARD_MY_PROFILE;
@@ -350,14 +354,15 @@ public class MainController extends Print {
 		}
 	}
 
+	// 거래글 검색 결과
 	private View boardResult() {
-		System.out.println("1.거래글 상세");
-		System.out.println("2.거래글 검색으로 돌아가기");
-		System.out.println("3.거래글 정렬로 돌아가기");
-		System.out.println("4.전체 리스트");
+		printVar();
+		printLn(1);
+		System.out.println(" ㅤ ㅤ ㅤ   ㅤ ㅤ  1. 거래글 상세 ㅤ ㅤ ㅤ 2. 거래글 검색 ㅤ ㅤ ㅤ 3. 거래글 정렬 ㅤ ㅤ ㅤ 4. 거래글 리스트");
+		printTLVar();
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
-			int con = ScanUtil.nextInt("게시물 번호 입력");
+			int con = ScanUtil.nextInt("게시물 번호 >> ");
 			sessionStorage.put("bno", con);
 			return View.BOARD_DETAIL;
 		}
@@ -372,7 +377,7 @@ public class MainController extends Print {
 		}
 		return View.BOARD_RESULT;
 	}
-	//끝
+	
 	private View boardSellerItem() {
 		String seller = (String) sessionStorage.get("seller");
 		System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
@@ -391,7 +396,7 @@ public class MainController extends Print {
 		System.out.println("2. 돌아가기");
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
-			int con = ScanUtil.nextInt("게시글 번호 입력>>");
+			int con = ScanUtil.nextInt("게시글 번호 >>");
 			sessionStorage.put("bno", con);
 			boardService.boardViews(con);
 		}
@@ -404,11 +409,15 @@ public class MainController extends Print {
 			return View.BOARD_SELLER_ITEM;
 		}
 	}
-	//끝
+
 	private View boardSeller() {
 		String seller = (String) sessionStorage.get("seller");
-		List<UserVo> sellerP = boardService.boardSeller(seller);
-		System.out.println("닉네임\t매너온도\t지역번호");
+		List<Object>param =new ArrayList();
+		param.add(seller);
+		List<UserVo> sellerP = boardService.boardSeller(param);
+		if(sellerP == null||sellerP.isEmpty()) {
+			System.out.println("데이터 없음");
+		}
 		for (UserVo userVo : sellerP) {
 			String nick = userVo.getMem_nick();
 			int tem = userVo.getMem_tem();
@@ -468,11 +477,11 @@ public class MainController extends Print {
 		if(sel ==2|| sel ==4) {
 			String content = null;
 			while (content == null || content.isEmpty()) {
-				 content = ScanUtil.nextLine("내용 >>");
+				 content = ScanUtil.nextLine("내용 >> ");
 		        if (content.isEmpty()) {
-		            System.out.println("제목을 입력해주세요.");
+		            System.out.println("내용을 입력해주세요.");
 		        } else if (content.getBytes().length > 1000) {
-		            System.out.println("입력된 제목의 길이: " + content.getBytes().length);
+		            System.out.println("입력된 내용의 길이: " + content.getBytes().length);
 		            System.out.println("내용은 1000byte 이하로 입력해주세요.");
 		            content = null; // 제목 길이가 초과된 경우 다시 입력 받기
 		        }
@@ -504,13 +513,13 @@ public class MainController extends Print {
 		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1:
-			int boardNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+			int boardNo = ScanUtil.nextInt("게시글 번호 >> ");
 			sessionStorage.put("boardNo", boardNo);
-			return View.ADMIN_DEL;		// 거래글 삭제
+			return View.ADMIN_DEL;			// 거래글 삭제
 		case 2:
-			return View.ADMIN;			// 관리자 홈
+			return View.ADMIN;				// 관리자 홈
 		default:
-			return View.ADMIN;			// 예외 : 관리자 홈
+			return View.ADMIN_BOARD_LIST;	// 예외 : 거래글 리스트
 		}
 	}
 	
@@ -524,20 +533,20 @@ public class MainController extends Print {
 	        // 게시글 삭제 확인
 	        confirmDelete = ScanUtil.nextLine("게시글을 삭제하시겠습니까? (Y/N) : ");
 	        if (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
-	            System.out.println("Y 또는 N을 입력해주세요.");
+	            System.out.println(green+ "Y 또는 N을 입력해주세요." + exit);
 	        }
 	    }
 	    printLn(1);
 	    if (confirmDelete.equalsIgnoreCase("N")) {
-	        System.out.println("삭제가 취소되었습니다.");
+	        System.out.println(green+ "삭제가 취소되었습니다." + exit);
 	        return View.ADMIN_BOARD_LIST;
 	    } else if (confirmDelete.equalsIgnoreCase("Y")) {
 	        // 게시글 삭제 서비스 호출
 	        boardService.boardDel(boardNo);
-	        System.out.println("성공적으로 삭제되었습니다.");
+	        System.out.println(green+ "성공적으로 삭제되었습니다." + exit);
 	        return View.ADMIN_BOARD_LIST;
 	    } else {
-	        System.out.println("잘못된 입력입니다. 삭제를 취소합니다.");
+	        System.out.println(green+ "잘못된 입력입니다. 삭제를 취소합니다." + exit);
 	        return View.ADMIN_BOARD_LIST;
 	    }
 	}
@@ -553,9 +562,9 @@ public class MainController extends Print {
 		int sel = ScanUtil.menu();
 		switch (sel) {
 			case 1:
-				return View.ADMIN;			// 관리자 홈
+				return View.ADMIN;				// 관리자 홈
 			default:
-				return View.ADMIN;			// 예외 : 관리자 홈
+				return View.ADMIN_MEM_LIST;		// 예외 : 회원목록 조회
 		}
 	}
 
@@ -571,10 +580,10 @@ public class MainController extends Print {
 	    while (subject == null || subject.isEmpty()) {
 	        subject = ScanUtil.nextLine("제목 >> ");
 	        if (subject.isEmpty()) {
-	            System.out.println("제목을 입력해주세요.");
+	            System.out.println(green+ "제목을 입력해주세요." + exit);
 	        } else if (subject.getBytes().length > 40) {
-	            System.out.println("입력된 제목의 길이: " + subject.getBytes().length);
-	            System.out.println("제목은 40byte 이하로 입력해주세요.");
+	            System.out.println(green+ "입력된 제목의 길이: " + subject.getBytes().length + exit);
+	            System.out.println(green+ "제목은 40byte 이하로 입력해주세요." + exit);
 	            subject = null; // 제목 길이가 초과된 경우 다시 입력 받기
 	        }
 	    }
@@ -583,10 +592,10 @@ public class MainController extends Print {
 	    while (content == null || content.isEmpty()) {
 	        content = ScanUtil.nextLine("내용 >> ");
 	        if (content.isEmpty()) {
-	            System.out.println("내용을 입력해주세요.");
+	            System.out.println(green+ "내용을 입력해주세요." + exit);
 	        } else if (content.getBytes().length > 600) {
-	            System.out.println("입력된 내용의 길이: " + content.getBytes().length);
-	            System.out.println("내용은 600byte 이하로 입력해주세요.");
+	            System.out.println(green+ "입력된 내용의 길이: " + content.getBytes().length + exit);
+	            System.out.println(green+ "내용은 600byte 이하로 입력해주세요." + exit);
 	            content = null; // 내용 길이가 초과된 경우 다시 입력 받기
 	        }
 	    }
@@ -600,12 +609,12 @@ public class MainController extends Print {
 	        // 서비스로 전달하기 전에 길이 체크 및 예외 발생
 	        adminService.noticeInsert(param);
 	        printLn(1);
-	        System.out.println("공지사항이 성공적으로 등록되었습니다.");
+	        System.out.println(green+ "공지사항이 성공적으로 등록되었습니다." + exit);
 	        return View.ADMIN_NOTICE;
 	    } catch (IllegalArgumentException e) {
 	        // 예외 처리: 길이 초과 등의 문제 발생 시
-	        System.out.println("오류 발생: " + e.getMessage());
-	        System.out.println("다시 입력해주세요.");
+	        System.out.println(green+ "오류 발생: " + e.getMessage() + exit);
+	        System.out.println(green+ "다시 입력해주세요." + exit);
 	        return noticeInsert(); // 오류 발생 시 다시 입력 받기
 	    }
 	}
@@ -618,7 +627,7 @@ public class MainController extends Print {
 	    int sel = ScanUtil.nextInt("수정할 항목 : ");
 	    if (sel == 4) {
 	    	printLn(1);
-	    	System.out.println("수정이 취소되었습니다.");
+	    	System.out.println(green+ "수정이 취소되었습니다." + exit);
 	    	return View.ADMIN_NOTICE_DETAIL;
 	    }
 
@@ -631,10 +640,10 @@ public class MainController extends Print {
 	        while (name == null || name.isEmpty()) {
 	            name = ScanUtil.nextLine("제목 >> ");
 	            if (name.isEmpty()) {
-	                System.out.println("제목을 입력해주세요.");
+	                System.out.println(green+ "제목을 입력해주세요." + exit);
 	            } else if (name.getBytes().length > 40) {
-	                System.out.println("입력된 제목의 길이: " + name.getBytes().length);
-	                System.out.println("제목은 40byte 이하로 입력해주세요.");
+	                System.out.println(green+ "입력된 제목의 길이: " + name.getBytes().length + exit);
+	                System.out.println(green+ "제목은 40byte 이하로 입력해주세요." + exit);
 	                name = null; // 제목 길이가 초과된 경우 다시 입력 받기
 	            }
 	        }
@@ -645,7 +654,7 @@ public class MainController extends Print {
 	        while (content == null || content.isEmpty()) {
 	            content = ScanUtil.nextLine("내용 >> ");
 	            if (content.isEmpty()) {
-	                System.out.println("내용을 입력해주세요.");
+	                System.out.println(green+ "내용을 입력해주세요." + exit);
 	            }
 	        }
 	        param.add(content);
@@ -661,18 +670,18 @@ public class MainController extends Print {
 	        confirmUpdate = ScanUtil.nextLine("게시글을 수정하시겠습니까?(Y/N) : ");
 
 	        if (confirmUpdate == null || !confirmUpdate.equalsIgnoreCase("Y") && !confirmUpdate.equalsIgnoreCase("N")) {
-	            System.out.println("Y 또는 N을 입력해주세요.");
+	            System.out.println(green+ "Y 또는 N을 입력해주세요." + exit);
 	        }
 	    }
 	    printLn(1);
 	    if (!confirmUpdate.equalsIgnoreCase("Y")) {
-	        System.out.println("수정이 취소되었습니다.");
+	        System.out.println(green+ "수정이 취소되었습니다." + exit);
 	        return View.ADMIN_NOTICE_DETAIL;
 	    }
 
 	    // 게시글 수정 서비스 호출
 	    adminService.noticeUpdate(param, sel);
-	    System.out.println("성공적으로 수정되었습니다.");
+	    System.out.println(green+ "성공적으로 수정되었습니다." + exit);
 
 	    return View.ADMIN_NOTICE_DETAIL;
 	}
@@ -686,13 +695,13 @@ public class MainController extends Print {
 	        confirmDelete = ScanUtil.nextLine("게시글을 삭제하시겠습니까? (Y/N) : ");
 
 	        if (confirmDelete == null || !confirmDelete.equalsIgnoreCase("Y") && !confirmDelete.equalsIgnoreCase("N")) {
-	            System.out.println("Y 또는 N을 입력해주세요.");
+	            System.out.println(green+ "Y 또는 N을 입력해주세요." + exit);
 	        }
 	    }
 
 	    printLn(1);
 	    if (confirmDelete.equalsIgnoreCase("N")) {
-	        System.out.println("삭제가 취소되었습니다.");
+	        System.out.println(green+"삭제가 취소되었습니다." + exit);
 	        return View.ADMIN_NOTICE_DETAIL;
 	    } else if (confirmDelete.equalsIgnoreCase("Y")) {
 	        int noticeNo = (int) sessionStorage.get("noticeNo");
@@ -700,10 +709,10 @@ public class MainController extends Print {
 	        param.add(noticeNo);
 	        // 게시글 삭제 서비스 호출
 	        adminService.noticeUpdate(param, 0);
-	        System.out.println("성공적으로 삭제되었습니다.");
+	        System.out.println(green+"성공적으로 삭제되었습니다." + exit);
 	        return View.ADMIN_NOTICE;
 	    } else {
-	        System.out.println("잘못된 입력입니다. 삭제를 취소합니다.");
+	        System.out.println(green+"잘못된 입력입니다. 삭제를 취소합니다." + exit);
 	        return View.ADMIN_NOTICE_DETAIL;
 	    }
 	}
@@ -746,10 +755,10 @@ public class MainController extends Print {
 				int noticeNo;
 			 	Map<String, Object> detail;
 				do {
-				    noticeNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+				    noticeNo = ScanUtil.nextInt("게시글 번호 >> ");
 				    detail = adminService.noticeDetail(noticeNo);
 				    if (detail == null) {
-				        System.out.println("잘못된 게시글 번호입니다. 다시 입력해주세요.");
+				        System.out.println(green+ "잘못된 게시글 번호입니다. 다시 입력해주세요." + exit);
 				    }
 				} while (detail == null);
 				
@@ -798,12 +807,13 @@ public class MainController extends Print {
 				int noticeNo;
 			 	Map<String, Object> detail;
 				do {
-				    noticeNo = ScanUtil.nextInt("게시글 번호 입력 : ");
+				    noticeNo = ScanUtil.nextInt("게시글 번호 >> ");
 				    detail = adminService.noticeDetail(noticeNo);
 				    if (detail == null) {
-				        System.out.println("잘못된 게시글 번호입니다. 다시 입력해주세요.");
+				        System.out.println(green+ "잘못된 게시글 번호입니다. 다시 입력해주세요." + exit);
 				    }
 				} while (detail == null);
+				
 				
 				sessionStorage.put("noticeNo", noticeNo);
 				return View.NOTICE_DETAIL;  // 공지사항 상세보기
@@ -816,7 +826,7 @@ public class MainController extends Print {
 	
 	
 	
-	//끝
+
 	private View boardMyProfile() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
@@ -851,27 +861,35 @@ public class MainController extends Print {
 			return View.BOARD_MY_PROFILE;
 		}
 	}
-	//끝
+
+	// 채팅방 리스트
 	private View chatList() {
 		UserVo user = (UserVo) MainController.sessionStorage.get("user");
 		String id = user.getMem_id();
 		List<Object>param = new ArrayList();
 		param.add(id);
 		param.add(id);
-		System.out.println("채팅방번호\t게시물번호\t게시물제목");
+		
+		printLn(2);
+		printVarVar();
+		System.out.println(" ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤ 채팅방 리스트");
+		printVar();
+		
+		System.out.println("채팅방 번호\t\t게시물 번호\t\t게시물 제목");
+		printVar();
 		List<Map<String, Object>> list = boardService.chatList(param);
 		for (Map<String, Object> map : list) {
 			BigDecimal cno =(BigDecimal) map.get("CHAT_NO");
 			BigDecimal bno =(BigDecimal) map.get("BOARD_NO");
 			String bt =(String) map.get("BOARD_TITLE");
-			System.out.println(cno+"\t"+bno+"\t"+bt);
+			System.out.println(cno+"\t\t\t"+bno+"\t\t\t"+bt);
 		}
-		
-		System.out.println("1.채팅방 선택");
-		System.out.println("2.나가기");
+		printTBLVar();
+		System.out.println(" ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ ㅤ   ㅤ ㅤ ㅤ ㅤ  ㅤ  1.채팅방 선택 ㅤ ㅤ ㅤ 2.나가기");
+		printTLVar();
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
-			int con = ScanUtil.nextInt("채팅방 번호 입력>> ");
+			int con = ScanUtil.nextInt("채팅방 번호 >> ");
 			sessionStorage.put("chatno", con);
 			ThreadNoti tn = (ThreadNoti) sessionStorage.get("noti");
 			Map<String, Object> number = boardService.readBno(con);
@@ -887,14 +905,19 @@ public class MainController extends Print {
 		}
 		return View.BOARD_LIST;
 	}
-	//끝
+
+	
+	// 거래글 정렬
 	private View boardSort() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		int ano = user.getArea_no();
-		System.out.println("1.가격순 정렬");
-		System.out.println("2.매너온도순 정렬");
-		System.out.println("3.좋아요순 정렬");
-		System.out.println("4.작성순 정렬");
+		printLn(2);
+		printVarVar();
+		System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ ㅤㅤ 거래글 정렬");
+		printVar();
+		printLn(1);
+		System.out.println(" ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  1. 가격순 ㅤ ㅤ ㅤ 2. 매너온도순 ㅤ ㅤ ㅤ 3. 좋아요순 ㅤ ㅤ ㅤ 4.작성순");
+		printTLVar();
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
 			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
@@ -954,19 +977,35 @@ public class MainController extends Print {
 		}
 		return View.BOARD_RESULT;
 	}
-	//끝
+	
+	
+	// 거래글 검색
 	private View boardSearch() {
 		UserVo user = (UserVo) sessionStorage.get("user");
 		int ano = user.getArea_no();
-		System.out.println("1. 카테고리 검색");
-		System.out.println("2. 제목 검색");
-		System.out.println("3. 내용 검색");
+		printLn(2);
+		printVarVar();
+		System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ ㅤㅤ 거래글 검색");
+		printVar();
+		printLn(1);
+		System.out.println(" ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  1. 카테고리 검색 ㅤ ㅤ ㅤ 2. 제목 검색 ㅤ ㅤ ㅤ 3. 내용 검색ㅤ ㅤ ㅤ 4. 거래글 리스트");
+		printTLVar();
 		int sel = ScanUtil.menu();
 		if(sel == 1) {
-			System.out.println("1.전자기기 2.가구 3.주방 4.도서 5.의류 6.스포츠 7.게임 8.식품 9.기타");
-			int cate = ScanUtil.nextInt("카테고리>>");
+			printLn(2);
+			printVarVar();
+			System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ ㅤ ㅤ 카테고리 검색");
+			printBLVar();
+			System.out.println("ㅤㅤ 1. 전자기기ㅤㅤ2. 가구ㅤㅤ3. 주방ㅤㅤ4. 도서ㅤㅤ5. 의류ㅤㅤ6. 스포츠ㅤㅤ7. 게임ㅤㅤ8. 식품ㅤㅤ9. 기타");
+			printTLVar();
+			int cate = ScanUtil.menu();
+			printLn(2);
+			printVarVar();
+			System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ   카테고리 검색 결과");
+			printVar();
 			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch(cate,ano);
+			
 			for (BoardVo boardVo : list) {
 				int no =boardVo.getBoard_no();
 				String title = boardVo.getBoard_title();
@@ -980,9 +1019,24 @@ public class MainController extends Print {
 			return View.BOARD_RESULT;
 		}
 		if(sel == 2) {
-			String title = ScanUtil.nextLine("제목>>");
+			String title = null;
+			while (title == null || title.isEmpty()) {
+				 title = ScanUtil.nextLine("제목 >> ");
+		        if (title.isEmpty()) {
+		            System.out.println(green+ "제목을 입력해주세요." + exit);
+		        } else if (title.getBytes().length > 40) {
+		            System.out.println(green+ "입력된 제목의 길이: " + title.getBytes().length + exit);
+		            System.out.println(green+ "제목은 40byte 이하로 입력해주세요." + exit);
+		            title = null; // 제목 길이가 초과된 경우 다시 입력 받기
+		        }
+		    }
+			printLn(2);
+			printVarVar();
+			System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ ㅤ 제목 검색 결과");
+			printVar();
 			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch(title,ano);
+
 			for (BoardVo boardVo : list) {
 				int no =boardVo.getBoard_no();
 				String title1 = boardVo.getBoard_title();
@@ -991,12 +1045,25 @@ public class MainController extends Print {
 				String date = boardVo.getBoard_date();
 				String stat = boardVo.getBoard_stat();
 				int like = boardVo.getBoard_like();
-				System.out.println(no+"\t"+title1+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);
-			}
+				System.out.println(no+"\t"+title1+"\t"+content+"\t"+price+"\t"+date+"\t"+stat+"\t"+like);			}
 			return View.BOARD_RESULT;
 		}
 		if(sel == 3) {
-			String content = ScanUtil.nextLine("내용>>");
+			String content = null;
+			while (content == null || content.isEmpty()) {
+				 content = ScanUtil.nextLine("내용 >> ");
+		        if (content.isEmpty()) {
+		            System.out.println(green+ "내용을 입력해주세요." + exit);
+		        } else if (content.getBytes().length > 1000) {
+		            System.out.println(green+ "입력된 내용의 길이: " + content.getBytes().length + exit);
+		            System.out.println(green+ "내용은 1000byte 이하로 입력해주세요." + exit);
+		            content = null; // 제목 길이가 초과된 경우 다시 입력 받기
+		        }
+		    }
+			printLn(2);
+			printVarVar();
+			System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤㅤ ㅤ 내용 검색 결과");
+			printVar();
 			System.out.println("번호\t제목\t내용\t가격\t등록일\t거래상태\t좋아요");
 			List<BoardVo> list = boardService.boardSearch2(content,ano);
 			for (BoardVo boardVo : list) {
@@ -1011,90 +1078,114 @@ public class MainController extends Print {
 			}
 			return View.BOARD_RESULT;
 		}
+		if(sel == 4) return View.BOARD_LIST;
 		return View.BOARD_SEARCH;
 	}
 
+	
+	// 거래글 등록
 	private View boardWrite() {
+		printLn(2);
+		printVarVar();
+		System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤ ㅤ  ㅤ거래글 등록");
+		printVar();
 		UserVo user = (UserVo) sessionStorage.get("user");
 		String id = user.getMem_id();
 		List<Object>param = new ArrayList();
 		String title = null;
 		while (title == null || title.isEmpty()) {
-			 title = ScanUtil.nextLine("제목 >>");
+			 title = ScanUtil.nextLine("제목 >> ");
 	        if (title.isEmpty()) {
-	            System.out.println("제목을 입력해주세요.");
+	            System.out.println(green+ "제목을 입력해주세요." + exit);
 	        } else if (title.getBytes().length > 40) {
-	            System.out.println("입력된 제목의 길이: " + title.getBytes().length);
-	            System.out.println("제목은 40byte 이하로 입력해주세요.");
+	            System.out.println(green+ "입력된 제목의 길이: " + title.getBytes().length + exit);
+	            System.out.println(green+ "제목은 40byte 이하로 입력해주세요." + exit);
 	            title = null; // 제목 길이가 초과된 경우 다시 입력 받기
 	        }
 	    }
 		param.add(title);
 		String content = null;
 		while (content == null || content.isEmpty()) {
-			 content = ScanUtil.nextLine("내용 >>");
+			 content = ScanUtil.nextLine("내용 >> ");
 	        if (content.isEmpty()) {
-	            System.out.println("제목을 입력해주세요.");
+	            System.out.println(green+ "내용을 내용해주세요." + exit);
 	        } else if (content.getBytes().length > 1000) {
-	            System.out.println("입력된 제목의 길이: " + content.getBytes().length);
-	            System.out.println("내용은 1000byte 이하로 입력해주세요.");
+	            System.out.println(green+ "입력된 내용의 길이: " + content.getBytes().length + exit);
+	            System.out.println(green+ "내용은 1000byte 이하로 입력해주세요." + exit);
 	            content = null; // 제목 길이가 초과된 경우 다시 입력 받기
 	        }
 	    }
 		param.add(content);
-		int price = ScanUtil.nextInt("가격 >>");
+		int price = ScanUtil.nextInt("가격 >> ");
 		param.add(price);
-		System.out.println("1.전자기기 2.가구 3.주방 4.도서 5.의류 6.스포츠 7.게임 8.식품 9.기타");
-		int cate = ScanUtil.nextInt("카테고리 >>");
+		System.out.println("1. 전자기기ㅤㅤ2. 가구ㅤㅤ3. 주방ㅤㅤ4. 도서ㅤㅤ5. 의류ㅤㅤ6. 스포츠ㅤㅤ7. 게임ㅤㅤ8. 식품ㅤㅤ9. 기타");
+		int cate = ScanUtil.nextInt("카테고리 번호 >> ");
 		param.add(cate);
 		
 		boardService.boardWrite(param, id);
+		printLn(1);
+		System.out.println(green+ "거래글이 성공적으로 등록되었습니다." + exit);
 		return View.BOARD_LIST;
 	}
 	
-	//끝
+	
+	
+	
+	// 회원 - 거래글 상세보기
 	private View boardDtail() {
+		printLn(2);
+		printVarVar();
+		System.out.println("  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ ㅤ  ㅤ ㅤ  ㅤ  ㅤ  ㅤ  ㅤㅤ  ㅤㅤ거래글 상세보기");
+		printVar();
+		printLn(1);
+		
 		int sel = (int) sessionStorage.get("bno");
 		boardService.boardDetail(sel);
 		BoardVo list = boardService.boardDetail(sel);
+		String board_stat = list.getBoard_stat().equals("Y") ? "판매완료" : "판매중";
 		int board_no = list.getBoard_no();
 		String board_title = list.getBoard_title();
 		String board_content = list.getBoard_content();
 		int board_price = list.getBoard_price();
 		String board_date = list.getBoard_date();
-		String board_stat = list.getBoard_stat();
 		int board_like = list.getBoard_like();
 		String mem_seller = list.getMem_seller();
 		int cate_id = list.getCate_id();
+		int views = list.getBoard_views();
 		
+		String categoryName = convertCategory(cate_id);
 		
-		System.out.println(list); //나중에 위에 겟으로 꺼내온걸로 디자인
+		System.out.println("제목 : "+board_title+"\t\t\t등록일 : "+board_date);
+		System.out.println("번호 : "+board_no+ "\t\t\t\t거래상태 : "+board_stat+"\t\t카테고리 : "+categoryName);
+		System.out.println("판매자 : "+mem_seller+ "\t\t가격 : "+board_price + "\t\t좋아요 : "+board_like);
+		printVar();
+	    for (int i = 0; i < board_content.length(); i += 70) {
+	        int endIndex = Math.min(i + 70, board_content.length());
+	        System.out.println(board_content.substring(i, endIndex));
+	    }
 		
-		sessionStorage.put("seller", mem_seller);  //판매자 이름 저장;
-		
-		System.out.println("1. 채팅하기");
-		System.out.println("2. 수정하기");
-		System.out.println("3. 삭제하기");
-		System.out.println("4. 좋아요 누르기");
-		System.out.println("5. 판매자 프로필 보기");
-		System.out.println("6. 게시글 리스트");
+		printBoardListDetailMenu();	// 메뉴출력
+		String mem_sellert = mem_seller.trim();
+		sessionStorage.put("seller", mem_sellert);  //판매자 이름 저장;
 		
 		int con = ScanUtil.menu();
 		if(con == 4) {
 			boardService.boardLike(sel);
-			System.out.println("좋아요!");
-		}else if(con ==2||con == 3) {
-			UserVo user = (UserVo) MainController.sessionStorage.get("user");
-			String mem_buyer = user.getMem_id();
-			String seller = (String) MainController.sessionStorage.get("seller");
-			if(mem_buyer.equals(seller)) {
+			System.out.println(green+"좋아요!" + exit);
+		}
+		if(con ==2||con == 3) {
+			UserVo user = (UserVo) sessionStorage.get("user");
+			String id = user.getMem_id();
+			String seller = (String)sessionStorage.get("seller");
+			if(id.equals(seller)) {
 				if(con==2) {
 					return View.BOARD_UPDATE;
 				}else if(con == 3) {
 					return View.BOARD_DEL;
 				}
 			}else {
-				System.out.println("작성자가 아닙니다.");
+				System.out.println(id+"\t"+seller);
+				System.out.println(green+ "작성자가 아닙니다." + exit);
 				return View.BOARD_DETAIL;
 			}
 		}
@@ -1124,7 +1215,7 @@ public class MainController extends Print {
 		
 		switch (con) {
 		case 1: 
-			if(id.equals(mem_seller)) {
+			if(id.equals(mem_sellert)) {
 				System.out.println("자신과 대화할 수 없습니다.");
 				return View.BOARD_DETAIL;
 			}if(flag) {
@@ -1146,21 +1237,27 @@ public class MainController extends Print {
 			
 			return View.CHAT_LOG;
 		case 2:
-			return View.BOARD_UPDATE;
+				return View.BOARD_UPDATE;
 		case 3:
-			return View.BOARD_DEL;
+				return View.BOARD_DEL;
 		case 4:
 			return View.BOARD_DETAIL;
 		case 5:
 			return View.BOARD_SELLER;
 		case 6:
 			return View.BOARD_LIST;
+		case 7:
+			return View.BOARD_SEARCH;
+		case 8:
+			return View.BOARD_SORT;
 		default:
 			return View.MAIN;
 		}
 		
 	}
-	//끝
+	
+	
+	// 회원 - 거래글 리스트
 	private View boardList() {
 		sessionStorage.remove("seller");
 		sessionStorage.remove("bno");
@@ -1181,21 +1278,12 @@ public class MainController extends Print {
 		int ano = user.getArea_no();
 		
 		List<BoardVo> list =  boardService.printBoard(param,ano);
-		for (BoardVo boardVo : list) {
-			System.out.println(boardVo);
-		}
+		printBoardList(list);
+		printBoardListMenu();	//메뉴 출력
 		
-		System.out.println("1. 거래글 상세보기");
-		System.out.println("2. 거래글 작성");
-		System.out.println("3. 거래글 검색");
-		System.out.println("4. 거래글 정렬");
-		System.out.println("5. 채팅방 보기");
-		System.out.println("6. 내 프로필 보기");
-		System.out.println("7. 공지사항");
-		System.out.println("이전페이지 = <, 다음페이지= >");
 		String sel = ScanUtil.nextLine("메뉴 선택 : ");
 		if(sel.equals("1")) {
-			int con = ScanUtil.nextInt("게시글 번호 입력>> ");
+			int con = ScanUtil.nextInt("게시글 번호 >> ");
 			sessionStorage.put("bno", con);
 			boardService.boardViews(con);
 		}
@@ -1230,6 +1318,8 @@ public class MainController extends Print {
 		}
 	}
 
+	
+	// 회원 - 회원가입
 	private View memberJoin() {
 		List<Object> param = new ArrayList();
 		String id = ScanUtil.nextLine("ID >> ");
@@ -1249,13 +1339,14 @@ public class MainController extends Print {
 		
 		userService.memberJoin(param);
 		
-		
 		return View.MEMBER;
 	}
-
+	
+	
+	// 회원 - 선택
 	private View member() {
-		System.out.println("1. 회원 로그인");
-		System.out.println("2. 회원 가입");
+		printMember();
+		
 		int sel = ScanUtil.menu();
 		switch (sel) {
 		case 1: 
@@ -1267,10 +1358,14 @@ public class MainController extends Print {
 		}
 	}
 
+	
+	// 회원 - 로그인
 	private View memberLogin() {
+		printLogin();
+		
 		String id = ScanUtil.nextLine("ID >> ");
 		String pass = ScanUtil.nextLine("PASS >> ");
-		
+		printLn(1);
 		List<Object> param = new ArrayList();
 		param.add(id);
 		param.add(pass);
@@ -1278,11 +1373,13 @@ public class MainController extends Print {
 		boolean loginPass = userService.login(param);
 		if(loginPass) {
 			UserVo user = (UserVo) sessionStorage.get("user");
-			System.out.println(user.getMem_name()+"님 환영합니다!");
+			printVar();
+			System.out.println(green+ user.getMem_name()+"님 환영합니다!" + exit);
 		}else {
-			System.out.println("1.다시 로그인 하시겠습니까?");
-			System.out.println("2.회원가입");
-			System.out.println("3.홈");
+			System.out.println(green+ "아이디 또는 비밀번호가 일치하지 않습니다." + exit);
+			printTBLVar();
+			System.out.println(" ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ1. 다시 로그인 ㅤ ㅤ ㅤ 2.회원가입 ㅤ ㅤ ㅤ 2. 홈");
+			printTLVar();
 			
 			int sel = ScanUtil.menu();
 			if(sel==1) return View.MEMBER_LOGIN;
@@ -1318,7 +1415,7 @@ public class MainController extends Print {
 	// 관리자 - 로그인
 	private View adminLogin() {
 		printadminLogin();
-		printLn(1);
+		
 		String id = ScanUtil.nextLine("ID >> ");
 		String pass = ScanUtil.nextLine("PASS >> ");
 		printLn(1);
@@ -1330,11 +1427,12 @@ public class MainController extends Print {
 		if(loginPass) {
 			AdminVo admin = (AdminVo)sessionStorage.get("admin");
 			printVar();
-			System.out.println(admin.getAdmin_name()+"님 환영합니다!");
+			System.out.println(green+ admin.getAdmin_name()+"님 환영합니다!" + exit);
 		}else {
-			System.out.println("1.다시 로그인 하시겠습니까?");
-			System.out.println("2.홈");
-			
+			System.out.println(green+ "아이디 또는 비밀번호가 일치하지 않습니다." + exit);
+			printTBLVar();
+			System.out.println(" ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤㅤ ㅤ ㅤ ㅤㅤㅤㅤㅤㅤ1. 다시 로그인 ㅤ ㅤ ㅤ 2. 홈");
+			printTLVar();
 			int sel = ScanUtil.menu();
 			if(sel==1) return View.ADMIN_LOGIN;
 			if(sel==2) return View.MAIN;
@@ -1349,12 +1447,12 @@ public class MainController extends Print {
 	    // 현재 세션에서 로그인 정보 삭제
 	    sessionStorage.remove("admin");
 	    printLn(1);
-	    System.out.println("로그아웃되었습니다.");
+	    System.out.println(green+ "로그아웃되었습니다." + exit);
 	    printLn(2);
 	    return View.MAIN;
 	}
 	
-
+	// 메인
 	private View home() {
 		printHome();
 		int sel = ScanUtil.menu();
